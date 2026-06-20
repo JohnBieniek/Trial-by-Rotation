@@ -30,8 +30,22 @@ public class SimpleAiMovement : MonoBehaviour
     private bool isStunned = false;
     private float stunEndsAt = 0f;
     private float stunnedUntil = 0f;
+
+    [SerializeField] private AudioClip clang1;
+
+    private AudioSource audioSource;
+
+
+
+ 
     private void Awake()
     {
+        audioSource = GetComponent<AudioSource>();
+
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+        }
         Debug.Log("AI Awake: " + gameObject.name);
         rb = GetComponent<Rigidbody2D>();
         rb.gravityScale = 0f;
@@ -52,6 +66,12 @@ public class SimpleAiMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (!GameController.hasStarted)
+        {
+            rb.linearVelocity = Vector2.zero;
+            rb.angularVelocity = 0f;
+            return;
+        }
         CheckIfOffWheel();
 
         if (isStunned)
@@ -136,6 +156,12 @@ public class SimpleAiMovement : MonoBehaviour
 
         if (playerRb == null)
             return;
+
+
+        if (clang1 != null)
+        {
+            audioSource.PlayOneShot(clang1);
+        }
 
         ContactPoint2D contact = collision.GetContact(0);
 

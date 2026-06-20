@@ -42,6 +42,12 @@ public class PlayerMovement : MonoBehaviour
     
     void Update()
     {
+        if (!GameController.hasStarted)
+        {
+            rigidBody.linearVelocity = Vector2.zero;
+            rigidBody.angularVelocity = 0f;
+            return;
+        }
         if (Keyboard.current.spaceKey.wasPressedThisFrame)
         {
             rigidBody.angularVelocity += 300f;

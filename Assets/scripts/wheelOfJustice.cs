@@ -7,6 +7,10 @@ public class WheelOfJustice : MonoBehaviour
 
     void Update()
     {
+        if (!GameController.hasStarted)
+        {
+            return;
+        }
         transform.Rotate(0f, 0f, rotationSpeed * Time.deltaTime);
     }
 }

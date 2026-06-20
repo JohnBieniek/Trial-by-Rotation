@@ -25,17 +25,19 @@ public class GameController : MonoBehaviour
     [SerializeField] private string enemyTag = "AI";
     [SerializeField] private int enemiesRemaining;
     private bool hasWon = false;
-    private bool hasStarted= false;
+    public static bool hasStarted { get; private set; }
 
     private bool isGameOver = false;
 
     [SerializeField] private AudioClip guiltyClip;
+    [SerializeField] private AudioClip innocentClip;
     [SerializeField] private AudioSource audioSource;
 
     private void Start()
     {
 
-        Time.timeScale = 0f;
+        hasStarted = false;
+        Time.timeScale = 1f;
         if (gameOverPanel != null)
         {
             gameOverPanel.SetActive(false);
@@ -89,7 +91,11 @@ public class GameController : MonoBehaviour
     private void WinTrial()
     {
         hasWon = true;
-
+        if (audioSource != null && innocentClip != null)
+        {
+            audioSource.PlayOneShot(innocentClip);
+        }
+        Time.timeScale = 0f;
         if (winPanel != null)
         {
             winPanel.SetActive(true);
@@ -101,7 +107,6 @@ public class GameController : MonoBehaviour
     {
         hasStarted = true;
         startPanel.SetActive(false);
-        Time.timeScale = 1f;
     }
 
 
