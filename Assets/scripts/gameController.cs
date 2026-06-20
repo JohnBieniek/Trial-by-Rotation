@@ -19,6 +19,12 @@ public class GameController : MonoBehaviour
     [SerializeField] private float cameraFollowSpeed = 5f;
     [SerializeField] private Vector3 cameraOffset = new Vector3(0f, 0f, -10f);
 
+    [Header("Win")]
+    [SerializeField] private GameObject winPanel;
+    [SerializeField] private string enemyTag = "AI";
+    [SerializeField] private int enemiesRemaining;
+    private bool hasWon = false;
+
     private bool isGameOver = false;
 
     private void Start()
@@ -27,11 +33,22 @@ public class GameController : MonoBehaviour
         {
             gameOverPanel.SetActive(false);
         }
+        if (winPanel != null)
+        {
+            winPanel.SetActive(false);
+        }
 
         if (maxDistanceFromWheelCenter <= 0f)
         {
             maxDistanceFromWheelCenter = GetWheelRadius();
         }
+
+
+        enemiesRemaining = FindObjectsByType<SimpleAiMovement>(
+            FindObjectsSortMode.None
+        ).Length;
+
+        Debug.Log("Enemies remaining: " + enemiesRemaining);
     }
 
     private void Update()
@@ -41,12 +58,59 @@ public class GameController : MonoBehaviour
             return;
         }
 
+        if (!hasWon)
+        {
+            CheckForWin();
+        }
+
         float distance = Vector2.Distance(player.position, wheelOfJustice.position);
 
         if (distance > maxDistanceFromWheelCenter + wheelEdgeBuffer)
         {
+            Debug.Log("distance at game over: " + distance);
             GameOver();
+
         }
+    }
+
+    private void CheckForWin()
+    {
+        enemiesRemaining = FindObjectsByType<SimpleAiMovement>(
+            FindObjectsSortMode.None
+        ).Length;
+        if (enemiesRemaining == 0)
+        {
+            Debug.Log("All enemies defeated! Player wins!");
+            WinTrial();
+        }
+    }
+
+    private void WinTrial()
+    {
+        hasWon = true;
+
+        if (winPanel != null)
+        {
+            winPanel.SetActive(true);
+            winPanel.transform.SetAsLastSibling();
+        }
+    }
+
+    public void StartNewTrial()
+    {
+        Debug.Log("StartNewTrial clicked");
+
+        if (JudgeAudioManager.Instance != null)
+        {
+            JudgeAudioManager.Instance.SetGameOver(false);
+        }
+
+        Time.timeScale = 1f;
+
+        UnityEngine.SceneManagement.Scene currentScene =
+            UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+
+        UnityEngine.SceneManagement.SceneManager.LoadScene(currentScene.name);
     }
 
     private float GetWheelRadius()
@@ -62,7 +126,7 @@ public class GameController : MonoBehaviour
     private void GameOver()
     {
         Debug.Log("GAME OVER TRIGGERED");
-
+        JudgeAudioManager.Instance.SetGameOver(true);
         isGameOver = true;
 
         gameOverPanel.SetActive(true);
@@ -75,6 +139,7 @@ public class GameController : MonoBehaviour
     {
         Time.timeScale = 1f;
 
+        JudgeAudioManager.Instance.SetGameOver(false);
         Scene currentScene = SceneManager.GetActiveScene();
         SceneManager.LoadScene(currentScene.name);
     }
