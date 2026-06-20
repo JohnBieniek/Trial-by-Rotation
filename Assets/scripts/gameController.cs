@@ -13,6 +13,7 @@ public class GameController : MonoBehaviour
 
     [Header("UI")]
     [SerializeField] private GameObject gameOverPanel;
+    [SerializeField] private GameObject startPanel;
 
     [Header("Camera")]
     [SerializeField] private Camera mainCamera;
@@ -24,11 +25,17 @@ public class GameController : MonoBehaviour
     [SerializeField] private string enemyTag = "AI";
     [SerializeField] private int enemiesRemaining;
     private bool hasWon = false;
+    private bool hasStarted= false;
 
     private bool isGameOver = false;
 
+    [SerializeField] private AudioClip guiltyClip;
+    [SerializeField] private AudioSource audioSource;
+
     private void Start()
     {
+
+        Time.timeScale = 0f;
         if (gameOverPanel != null)
         {
             gameOverPanel.SetActive(false);
@@ -42,13 +49,6 @@ public class GameController : MonoBehaviour
         {
             maxDistanceFromWheelCenter = GetWheelRadius();
         }
-
-
-        enemiesRemaining = FindObjectsByType<SimpleAiMovement>(
-            FindObjectsSortMode.None
-        ).Length;
-
-        Debug.Log("Enemies remaining: " + enemiesRemaining);
     }
 
     private void Update()
@@ -80,6 +80,7 @@ public class GameController : MonoBehaviour
         ).Length;
         if (enemiesRemaining == 0)
         {
+            JudgeAudioManager.Instance.SetGameOver(true);
             Debug.Log("All enemies defeated! Player wins!");
             WinTrial();
         }
@@ -96,10 +97,19 @@ public class GameController : MonoBehaviour
         }
     }
 
+    public void StartFirstTrial()
+    {
+        hasStarted = true;
+        startPanel.SetActive(false);
+        Time.timeScale = 1f;
+    }
+
+
     public void StartNewTrial()
     {
         Debug.Log("StartNewTrial clicked");
-
+        hasStarted= true;
+        startPanel.SetActive(false);
         if (JudgeAudioManager.Instance != null)
         {
             JudgeAudioManager.Instance.SetGameOver(false);
@@ -128,6 +138,11 @@ public class GameController : MonoBehaviour
         Debug.Log("GAME OVER TRIGGERED");
         JudgeAudioManager.Instance.SetGameOver(true);
         isGameOver = true;
+
+        if (audioSource != null && guiltyClip != null)
+        {
+            audioSource.PlayOneShot(guiltyClip);
+        }
 
         gameOverPanel.SetActive(true);
         gameOverPanel.transform.SetAsLastSibling();
