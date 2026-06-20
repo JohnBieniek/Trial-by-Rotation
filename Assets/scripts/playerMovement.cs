@@ -1,13 +1,34 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+[RequireComponent(typeof(Rigidbody2D))]
 public class PlayerMovement : MonoBehaviour
 {
-    [SerializeField]
-    private float moveSpeed = 5f;
+
+    [Header("Movement")]
+    [SerializeField] private float thrustForce = 10f;
+    [SerializeField] private float maxSpeed = 8f;
+
+    [Header("Friction")]
+    [SerializeField] private float frictionModifier = 2f;
+
+    private Rigidbody2D rigidBody;
+    private Vector2 inputDirection;
 
     [SerializeField]
     private float rotationSpeed = -90f; // degrees per second
+    [SerializeField] private float spinAcceleration = 500f;
+    [SerializeField] private float maxRotationalSpeed = 1080f;
+
+    [SerializeField] private float verticalForceMultiplier = 1.5f;
+
+    private void Awake()
+    {
+        rigidBody = GetComponent<Rigidbody2D>();
+
+        rigidBody.gravityScale = 0f;
+        rigidBody.freezeRotation = false;
+    }
 
     private void Start()
     {
@@ -17,30 +38,71 @@ public class PlayerMovement : MonoBehaviour
         {
             transform.SetParent(wheel.transform, true);
         }
-        else
-        {
-            Debug.LogError("Could not find GameObject named 'Wheel of Justice'");
-        }
     }
-
+    
     void Update()
     {
-        Vector2 movement = Vector2.zero;
+        if (Keyboard.current.spaceKey.wasPressedThisFrame)
+        {
+            rigidBody.angularVelocity += 300f;
+        }
+        inputDirection = Vector2.zero;
 
         if (Keyboard.current.aKey.isPressed)
-            movement.x -= 1f;
+            inputDirection.x -= 1f;
 
         if (Keyboard.current.dKey.isPressed)
-            movement.x += 1f;
+            inputDirection.x += 1f;
 
         if (Keyboard.current.sKey.isPressed)
-            movement.y -= 1f;
+            inputDirection.y -= 1f;
 
         if (Keyboard.current.wKey.isPressed)
-            movement.y += 1f;
+            inputDirection.y += 1f;
 
-        movement = movement.normalized;
-        transform.Rotate(0f, 0f, rotationSpeed * Time.deltaTime);
-        transform.position += (Vector3)movement * moveSpeed * Time.deltaTime;
+        inputDirection = inputDirection.normalized;
+    }
+
+    private void FixedUpdate()
+    {
+        ApplyMovementForce();
+        ApplyFriction();
+        RestrictSpeed();
+    }
+
+    private void ApplyMovementForce()
+    {
+        if (inputDirection == Vector2.zero)
+            return;
+
+        Vector2 cameraRight = Camera.main.transform.right;
+        Vector2 cameraUp = Camera.main.transform.up;
+
+
+        Vector2 movementDirection =
+         (cameraRight * inputDirection.x) +
+         (cameraUp * inputDirection.y * verticalForceMultiplier);
+
+        rigidBody.AddForce(movementDirection.normalized * thrustForce, ForceMode2D.Force);
+    }
+
+    private void ApplyFriction()
+    {
+        if (rigidBody.linearVelocity.sqrMagnitude < 0.001f)
+        {
+            rigidBody.linearVelocity = Vector2.zero;
+            return;
+        }
+
+        Vector2 frictionForce = -rigidBody.linearVelocity * frictionModifier;
+        rigidBody.AddForce(frictionForce, ForceMode2D.Force);
+    }
+
+    private void RestrictSpeed()
+    {
+        if (rigidBody.linearVelocity.magnitude > maxSpeed)
+        {
+            rigidBody.linearVelocity = rigidBody.linearVelocity.normalized * maxSpeed;
+        }
     }
 }
