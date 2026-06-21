@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(Rigidbody2D))]
@@ -14,6 +15,12 @@ public class PlayerMovement : MonoBehaviour
 
     private Rigidbody2D rigidBody;
     private Vector2 inputDirection;
+
+
+    [Header("Knockback")]
+    [SerializeField] private float knockbackMultiplier = 2f;
+    [SerializeField] private float spinKnockbackMultiplier = 0.002f;
+    [SerializeField] private float maxKnockback = 40f;
 
     [SerializeField]
     private float rotationSpeed = -90f; // degrees per second
@@ -110,5 +117,32 @@ public class PlayerMovement : MonoBehaviour
         {
             rigidBody.linearVelocity = rigidBody.linearVelocity.normalized * maxSpeed;
         }
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (!collision.gameObject.CompareTag("AI"))
+            return;
+
+        Rigidbody2D aiRigidBody = collision.gameObject.GetComponent<Rigidbody2D>();
+
+        if (aiRigidBody == null)
+            return;
+
+
+        ContactPoint2D contact = collision.GetContact(0);
+
+        Vector2 knockbackDirection =
+            ((Vector2)transform.position - contact.point).normalized;
+
+        float aiSpeed = aiRigidBody.linearVelocity.magnitude;
+        float aiSpin = Mathf.Abs(aiRigidBody.angularVelocity);
+
+        float knockbackForce =
+            (aiSpeed + aiSpin * spinKnockbackMultiplier)
+            * knockbackMultiplier;
+
+        knockbackForce = Mathf.Clamp(knockbackForce, 0f, maxKnockback);
+        rigidBody.AddForce(knockbackDirection * knockbackForce, ForceMode2D.Impulse);
     }
 }
