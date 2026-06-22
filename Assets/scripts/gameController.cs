@@ -33,6 +33,7 @@ public class GameController : MonoBehaviour
     [SerializeField] private AudioClip innocentClip;
     [SerializeField] private AudioSource audioSource;
 
+    [SerializeField] private StartPanelAccusation startPanelAccusation;
     private void Start()
     {
 
@@ -53,12 +54,34 @@ public class GameController : MonoBehaviour
         }
     }
 
+    public bool IsGameWonOrLost()
+    {
+        return isGameOver || hasWon;
+    }
+
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            if (startPanel != null && startPanel.activeInHierarchy)
+            {
+                StartFirstTrial();
+            }
+            else if (winPanel != null && winPanel.activeInHierarchy)
+            {
+                StartNewTrial();
+            }
+            else if (gameOverPanel != null && gameOverPanel.activeInHierarchy)
+            {
+                PlayAgain();
+            }
+        }
+
         if (isGameOver || player == null || wheelOfJustice == null)
         {
             return;
         }
+
 
         if (!hasWon)
         {
@@ -73,59 +96,128 @@ public class GameController : MonoBehaviour
             GameOver();
 
         }
+
+        
     }
 
     private void CheckForWin()
     {
-        enemiesRemaining = FindObjectsByType<SimpleAiMovement>(
-            FindObjectsSortMode.None
-        ).Length;
-        if (enemiesRemaining == 0)
-        {
-            JudgeAudioManager.Instance.SetGameOver(true);
-            Debug.Log("All enemies defeated! Player wins!");
-            WinTrial();
+        if (startPanel != null && startPanel.activeInHierarchy)
+            return;
+        if (!hasWon && hasStarted
+            && !isGameOver) { 
+            enemiesRemaining = FindObjectsByType<SimpleAiMovement>(
+                FindObjectsSortMode.None
+            ).Length;
+            
+
+            if (enemiesRemaining == 0)
+            {
+                JudgeAudioManager.Instance.SetGameOver(true);
+                Debug.Log("All enemies defeated! Player wins!");
+                WinTrial();
+            }
         }
     }
 
     private void WinTrial()
     {
         hasWon = true;
+        hasStarted = false;
+        startPanelAccusation.GameOver();//Stop testimony loop and audio
         if (audioSource != null && innocentClip != null)
         {
             audioSource.PlayOneShot(innocentClip);
         }
         Time.timeScale = 0f;
+        StatusPanelController.Instance.gameObject.SetActive(false);
         if (winPanel != null)
         {
             winPanel.SetActive(true);
             winPanel.transform.SetAsLastSibling();
         }
+
     }
 
     public void StartFirstTrial()
     {
+        Debug.Log("StartFirstTrial clicked");
         hasStarted = true;
-        startPanel.SetActive(false);
+        isGameOver = false;
+        hasWon = false;
+
+        Time.timeScale = 1f;
+
+        if (gameOverPanel != null)
+            gameOverPanel.SetActive(false);
+
+        if (winPanel != null)
+            winPanel.SetActive(false);
+
+
+
+       
+        startPanelAccusation.StartGame();
+        if (startPanel != null)
+            startPanel.SetActive(false);
+        //UnityEngine.SceneManagement.Scene currentScene =
+        //  UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+
+        //UnityEngine.SceneManagement.SceneManager.LoadScene(currentScene.name);
+        SpawnPlayer();
+        EnemySpawner.Instance.SpawnEnemies();
+        StatusPanelController.Instance.gameObject.SetActive(true);
     }
 
+    private void SpawnPlayer()
+    {
+        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
 
+        if (playerObj == null || wheelOfJustice == null)
+            return;
+
+        float angle = Random.Range(0f, Mathf.PI * 2f);
+
+        Vector2 offset = new Vector2(
+            Mathf.Cos(angle),
+            Mathf.Sin(angle)
+        ) * 4f;
+
+        playerObj.transform.position =
+            wheelOfJustice.position + (Vector3)offset;
+
+        Rigidbody2D rb = playerObj.GetComponent<Rigidbody2D>();
+
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector2.zero;
+            rb.angularVelocity = 0f;
+        }
+    }
+
+    //Called by the win button on the win panel to start a new trial
     public void StartNewTrial()
     {
         Debug.Log("StartNewTrial clicked");
         hasStarted= true;
-        startPanel.SetActive(false);
+        hasWon = false;
+        startPanel.SetActive(true);
+        gameOverPanel.SetActive(false);
+        winPanel.SetActive(false);
         if (JudgeAudioManager.Instance != null)
         {
             JudgeAudioManager.Instance.SetGameOver(false);
         }
 
         Time.timeScale = 1f;
+        audioSource.Stop();
+        //UnityEngine.SceneManagement.Scene currentScene =
+        //    UnityEngine.SceneManagement.SceneManager.GetActiveScene();
 
-        UnityEngine.SceneManagement.Scene currentScene =
-            UnityEngine.SceneManagement.SceneManager.GetActiveScene();
-
-        UnityEngine.SceneManagement.SceneManager.LoadScene(currentScene.name);
+        //UnityEngine.SceneManagement.SceneManager.LoadScene(currentScene.name);
+        startPanelAccusation.ShowNextAccusation();
+        //startPanelAccusation.StartGame();
+ 
     }
 
     private float GetWheelRadius()
@@ -141,6 +233,7 @@ public class GameController : MonoBehaviour
     private void GameOver()
     {
         Debug.Log("GAME OVER TRIGGERED");
+        startPanelAccusation.GameOver();
         JudgeAudioManager.Instance.SetGameOver(true);
         isGameOver = true;
 
@@ -148,20 +241,27 @@ public class GameController : MonoBehaviour
         {
             audioSource.PlayOneShot(guiltyClip);
         }
-
+        SpawnPlayer();
         gameOverPanel.SetActive(true);
         gameOverPanel.transform.SetAsLastSibling();
-
+        StatusPanelController.Instance.gameObject.SetActive(false);
+        StartPanelAccusation.Instance.SetPlaintiffCount(0f);
         Time.timeScale = 0f;
+
     }
 
     public void PlayAgain()
     {
-        Time.timeScale = 1f;
-
+        Time.timeScale = 0f;
+        isGameOver = false;
+        hasStarted = false;
+        startPanel.SetActive(true);
+        gameOverPanel.SetActive(false);
+        winPanel.SetActive(false);
         JudgeAudioManager.Instance.SetGameOver(false);
-        Scene currentScene = SceneManager.GetActiveScene();
-        SceneManager.LoadScene(currentScene.name);
+        StartPanelAccusation.Instance.ShowNextAccusation();
+        //Scene currentScene = SceneManager.GetActiveScene();
+        //SceneManager.LoadScene(currentScene.name);
     }
 
     private void LateUpdate()

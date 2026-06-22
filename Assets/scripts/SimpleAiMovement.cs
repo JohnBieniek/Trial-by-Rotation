@@ -109,11 +109,12 @@ public class SimpleAiMovement : MonoBehaviour
         if (rb.linearVelocity.magnitude > maxSpeed)
             rb.linearVelocity = rb.linearVelocity.normalized * maxSpeed;
 
-        Debug.Log("AI pushed. Velocity: " + rb.linearVelocity);
+        //Debug.Log("AI pushed. Velocity: " + rb.linearVelocity);
     }
 
     private void CheckIfOffWheel()
     {
+        wheelOfJustice = GameObject.Find("Wheel of Justice")?.transform;
         if (wheelOfJustice == null)
             return;
 
@@ -133,8 +134,11 @@ public class SimpleAiMovement : MonoBehaviour
                 );
             }
 
-            JudgeAudioManager.Instance.QueueRandomJudgeClip();
-            
+            if (StartPanelAccusation.Instance != null && !StartPanelAccusation.Instance.IsPlaying())
+            {
+                JudgeAudioManager.Instance.QueueRandomJudgeClip();
+            }
+
             Destroy(gameObject);
         }
     }

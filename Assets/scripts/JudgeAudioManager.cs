@@ -39,6 +39,7 @@ public class JudgeAudioManager : MonoBehaviour
             audioSource.Play();
         }
     }
+   
 
     public void QueueRandomJudgeClip()
     {
@@ -70,6 +71,11 @@ public class JudgeAudioManager : MonoBehaviour
         }
     }
 
+    public void clearAnnouncements()
+    {
+        playQueue.Clear();
+        audioSource.Stop();
+    }
     public void SetGameOver(bool value)
     {
         gameOver = value;
