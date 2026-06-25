@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using static StartPanelAccusation.Accusation;
 
 public class StartPanelAccusation : MonoBehaviour, IPointerDownHandler
 {
@@ -16,9 +17,20 @@ public class StartPanelAccusation : MonoBehaviour, IPointerDownHandler
 
         public AudioClip audioClip;
 
-        public AudioClip[] testimonies;
+        [SerializeField]
+        public Testimony[] testimonies;
     }
+    [System.Serializable]
+    public class Testimony
+    {
+        public AudioClip audioClip;
 
+        [Range(0f, 1f)]
+        public float volume = 1f;
+    }
+    
+
+   
     [SerializeField] private TMP_Text accusationText;
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private Accusation[] accusations;
@@ -27,7 +39,7 @@ public class StartPanelAccusation : MonoBehaviour, IPointerDownHandler
     [SerializeField] private float startingPlantiffCount = 3;
     private float plantiffCount = 0;
     private readonly List<int> remainingAccusations = new();
-    private readonly List<AudioClip> remainingTestimonies = new();
+    private List<Testimony> remainingTestimonies;
 
     private Coroutine testimonyCoroutine;
     private Accusation currentAccusation;
@@ -136,7 +148,7 @@ public class StartPanelAccusation : MonoBehaviour, IPointerDownHandler
             testimonyCoroutine = null;
         }
 
-        if (remainingTestimonies.Count > 0)
+        if (remainingTestimonies!=null && remainingTestimonies.Count > 0)
             testimonyCoroutine = StartCoroutine(TestimonyLoop());
     }
 
@@ -160,13 +172,16 @@ public class StartPanelAccusation : MonoBehaviour, IPointerDownHandler
     private IEnumerator TestimonyLoop()
     {
         Debug.Log("Starting testimony loop with " + remainingTestimonies.Count + " testimonies.");
+
         PlayAccusationAudioOnce();
         yield return new WaitForSeconds(15.5f);
 
         while (remainingTestimonies.Count > 0)
         {
             int bagIndex = Random.Range(0, remainingTestimonies.Count);
-            AudioClip clip = remainingTestimonies[bagIndex];
+            Testimony testimony = remainingTestimonies[bagIndex];
+
+            AudioClip clip = testimony.audioClip;
 
             Debug.Log("Selected testimony: " + (clip != null ? clip.name : "null") + " from bag index: " + bagIndex);
 
@@ -175,8 +190,13 @@ public class StartPanelAccusation : MonoBehaviour, IPointerDownHandler
             if (audioSource != null && clip != null)
             {
                 JudgeAudioManager.Instance.clearAnnouncements();
-                audioSource.PlayOneShot(clip, testimonyVolume);
-                Debug.Log("Playing testimony: " + clip.name);
+
+                audioSource.PlayOneShot(
+                    clip,
+                    testimonyVolume * testimony.volume
+                );
+
+                Debug.Log("Playing testimony: " + clip.name + " at volume " + testimony.volume);
             }
 
             if (remainingTestimonies.Count == 0)
@@ -190,12 +210,14 @@ public class StartPanelAccusation : MonoBehaviour, IPointerDownHandler
 
     private void BuildTestimonyBag(Accusation accusation)
     {
+        if (remainingTestimonies == null)
+            remainingTestimonies = new List<Testimony>();
         remainingTestimonies.Clear();
 
         if (accusation == null || accusation.testimonies == null)
             return;
 
-        foreach (AudioClip testimony in accusation.testimonies)
+        foreach (Testimony testimony in accusation.testimonies)
         {
             if (testimony != null)
                 remainingTestimonies.Add(testimony);

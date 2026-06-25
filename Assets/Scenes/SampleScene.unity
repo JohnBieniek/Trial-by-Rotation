@@ -29055,174 +29055,280 @@ MonoBehaviour:
   - text: impersonating a reasonable adult
     audioClip: {fileID: 8300000, guid: 72d0ee76126328d449e0b1416be8ce82, type: 3}
     testimonies:
-    - {fileID: 8300000, guid: e2d1b2c87e6f5ac4cb46eab4430dd4d6, type: 3}
-    - {fileID: 8300000, guid: e11ceb2c5f476ea438d1578bfbd4970b, type: 3}
-    - {fileID: 8300000, guid: 977574e68b9c5204bb59c9039787e872, type: 3}
-    - {fileID: 8300000, guid: ad78fe78437e90f4baaa7d3815349177, type: 3}
-    - {fileID: 8300000, guid: f9582ce026f09664184ef0c589132a08, type: 3}
+    - audioClip: {fileID: 8300000, guid: e2d1b2c87e6f5ac4cb46eab4430dd4d6, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: e11ceb2c5f476ea438d1578bfbd4970b, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: 977574e68b9c5204bb59c9039787e872, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: ad78fe78437e90f4baaa7d3815349177, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: f9582ce026f09664184ef0c589132a08, type: 3}
+      volume: 0.877
   - text: criminal overuse of "air" "quotes"
     audioClip: {fileID: 8300000, guid: 315ce6c07678ae7499179c4743cbe330, type: 3}
     testimonies:
-    - {fileID: 8300000, guid: 25b68438085372f41bafd903ec095577, type: 3}
-    - {fileID: 8300000, guid: 6194f982b3db10244a6a052e9653f82b, type: 3}
-    - {fileID: 8300000, guid: dea973ad0df42b34a876c6775cec23ca, type: 3}
-    - {fileID: 8300000, guid: 3ae1d82424ef0fe43a5f9dd974e01609, type: 3}
-    - {fileID: 8300000, guid: b528d246d326ba34290f378934a2ebb9, type: 3}
+    - audioClip: {fileID: 0}
+      volume: 0
+    - audioClip: {fileID: 8300000, guid: 25b68438085372f41bafd903ec095577, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: 6194f982b3db10244a6a052e9653f82b, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: dea973ad0df42b34a876c6775cec23ca, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: 3ae1d82424ef0fe43a5f9dd974e01609, type: 3}
+      volume: 0.958
+    - audioClip: {fileID: 8300000, guid: b528d246d326ba34290f378934a2ebb9, type: 3}
+      volume: 0.958
   - text: black market muffin distribution outside a regulated bake sale
     audioClip: {fileID: 8300000, guid: c1fb6f488b1956b4aa70fa0e36c02be8, type: 3}
     testimonies:
-    - {fileID: 8300000, guid: 8fe6b80b8a280ee4b9a9e2b59523caaf, type: 3}
-    - {fileID: 8300000, guid: 365c8b21564257d4081369303c2c8951, type: 3}
-    - {fileID: 8300000, guid: 24e1d4f3f1677d647a881fcb134e0de2, type: 3}
-    - {fileID: 8300000, guid: 5f3620b68e83ec34a8998dd528ad9563, type: 3}
-    - {fileID: 8300000, guid: 165e9233f33bb764e98f013654db4920, type: 3}
+    - audioClip: {fileID: 8300000, guid: 8fe6b80b8a280ee4b9a9e2b59523caaf, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: 365c8b21564257d4081369303c2c8951, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: 24e1d4f3f1677d647a881fcb134e0de2, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: 5f3620b68e83ec34a8998dd528ad9563, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: 165e9233f33bb764e98f013654db4920, type: 3}
+      volume: 0.92
   - text: reckless consumption of breakfast foods after Noon
     audioClip: {fileID: 8300000, guid: 2effd5d515d874949815eee85c55a278, type: 3}
     testimonies:
-    - {fileID: 8300000, guid: e24a6cfa7dbb9544688bf885d13d185f, type: 3}
-    - {fileID: 8300000, guid: 772f5e9dccaf04b42859c68cc9d2ea97, type: 3}
-    - {fileID: 8300000, guid: 0599f3c148245184596c828d9ed23f00, type: 3}
-    - {fileID: 8300000, guid: f6561e741779b9543a1f0d4c3a9dbf09, type: 3}
-    - {fileID: 8300000, guid: 72f28d0b4f468c34ebc40d3edf92de35, type: 3}
+    - audioClip: {fileID: 8300000, guid: e24a6cfa7dbb9544688bf885d13d185f, type: 3}
+      volume: 0.935
+    - audioClip: {fileID: 8300000, guid: 772f5e9dccaf04b42859c68cc9d2ea97, type: 3}
+      volume: 0.935
+    - audioClip: {fileID: 8300000, guid: 0599f3c148245184596c828d9ed23f00, type: 3}
+      volume: 0.935
+    - audioClip: {fileID: 8300000, guid: f6561e741779b9543a1f0d4c3a9dbf09, type: 3}
+      volume: 0.935
+    - audioClip: {fileID: 8300000, guid: 72f28d0b4f468c34ebc40d3edf92de35, type: 3}
+      volume: 0.935
   - text: distribution of counterfeit compliments in a judicial building
     audioClip: {fileID: 8300000, guid: faa497d9c5f382045b148349ce2de9ed, type: 3}
     testimonies:
-    - {fileID: 8300000, guid: 9ae039a3863f3a14ca646a9ff2f619e3, type: 3}
-    - {fileID: 8300000, guid: 5515d8c77b2379b4eae6573df136464f, type: 3}
-    - {fileID: 8300000, guid: 6756624b653e03742ab1df8a52c0cdb8, type: 3}
-    - {fileID: 8300000, guid: 8da21da9f6bb6ee4381d9f9a84f6e766, type: 3}
-    - {fileID: 8300000, guid: c70aee0575e95b04ba7ff55b38c8baeb, type: 3}
+    - audioClip: {fileID: 8300000, guid: 9ae039a3863f3a14ca646a9ff2f619e3, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: 5515d8c77b2379b4eae6573df136464f, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: 6756624b653e03742ab1df8a52c0cdb8, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: 8da21da9f6bb6ee4381d9f9a84f6e766, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: c70aee0575e95b04ba7ff55b38c8baeb, type: 3}
+      volume: 0.93
   - text: excess presses on a public cross walk button
     audioClip: {fileID: 8300000, guid: 7389f4ee3c9d1ac43860fbe84e991932, type: 3}
     testimonies:
-    - {fileID: 8300000, guid: 23a3bbde5cd28ca4a8a9806f5d075af8, type: 3}
-    - {fileID: 8300000, guid: 6c808c91d15762147a5570e27da8059a, type: 3}
-    - {fileID: 8300000, guid: e6b14fa98db06c441a886efce867a808, type: 3}
-    - {fileID: 8300000, guid: 389b8fe0aa8fa1341950a5c5b7a1ae74, type: 3}
+    - audioClip: {fileID: 8300000, guid: 23a3bbde5cd28ca4a8a9806f5d075af8, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: 6c808c91d15762147a5570e27da8059a, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: e6b14fa98db06c441a886efce867a808, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: 389b8fe0aa8fa1341950a5c5b7a1ae74, type: 3}
+      volume: 1
   - text: possession of weapons grade dad jokes without a license
     audioClip: {fileID: 8300000, guid: 878601ce45d9c394eac35364d1c36855, type: 3}
     testimonies:
-    - {fileID: 8300000, guid: 34eb1cae1937ad14188e007bdeee4675, type: 3}
-    - {fileID: 8300000, guid: 842c9827186fc1641bc75431d581c52f, type: 3}
-    - {fileID: 8300000, guid: 7bc8b3f3974c8e94e96caa7bc937434b, type: 3}
-    - {fileID: 8300000, guid: 9dee8c09ccf1f5f48b81ce3a9b80f949, type: 3}
-    - {fileID: 8300000, guid: fa8bd586bddcd79459ac53f62b28f015, type: 3}
+    - audioClip: {fileID: 8300000, guid: 34eb1cae1937ad14188e007bdeee4675, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: 842c9827186fc1641bc75431d581c52f, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: 7bc8b3f3974c8e94e96caa7bc937434b, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: 9dee8c09ccf1f5f48b81ce3a9b80f949, type: 3}
+      volume: 0.938
+    - audioClip: {fileID: 8300000, guid: fa8bd586bddcd79459ac53f62b28f015, type: 3}
+      volume: 0.942
   - text: trespassing in a restricted daydream
     audioClip: {fileID: 8300000, guid: 9169f1ef172d9364eb077b3ea2224231, type: 3}
     testimonies:
-    - {fileID: 8300000, guid: b5588477a6a5fdc4ea319445d79baf50, type: 3}
-    - {fileID: 8300000, guid: 9f922484b32ed3d41b03e316dc874473, type: 3}
-    - {fileID: 8300000, guid: d0f6ff586af5b5641bf0cc1064ef1ab5, type: 3}
-    - {fileID: 8300000, guid: a12abee03690c404b9c96ddde151f7f9, type: 3}
-    - {fileID: 8300000, guid: cd051c633d775bf498a8ccb2c6dae9b4, type: 3}
+    - audioClip: {fileID: 8300000, guid: b5588477a6a5fdc4ea319445d79baf50, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: 9f922484b32ed3d41b03e316dc874473, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: d0f6ff586af5b5641bf0cc1064ef1ab5, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: a12abee03690c404b9c96ddde151f7f9, type: 3}
+      volume: 0.943
+    - audioClip: {fileID: 8300000, guid: cd051c633d775bf498a8ccb2c6dae9b4, type: 3}
+      volume: 0.924
   - text: possession of excessive sassiness in the second degree
     audioClip: {fileID: 8300000, guid: cf21b9ff820c69149bdaabb2ca769abd, type: 3}
     testimonies:
-    - {fileID: 8300000, guid: 7358d0da3c5d584419b70b7575d774d5, type: 3}
-    - {fileID: 8300000, guid: 648179502dc5d544da72ede8f0214ce6, type: 3}
-    - {fileID: 8300000, guid: e6a9e514887a8f145b9e4379c5b6c620, type: 3}
-    - {fileID: 8300000, guid: d3e5a5e3eaa0e334db6ef6ba538b84bf, type: 3}
-    - {fileID: 8300000, guid: 9399019373b0fef4fb58eecd6f0d2dfa, type: 3}
+    - audioClip: {fileID: 8300000, guid: 7358d0da3c5d584419b70b7575d774d5, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: 648179502dc5d544da72ede8f0214ce6, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: e6a9e514887a8f145b9e4379c5b6c620, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: d3e5a5e3eaa0e334db6ef6ba538b84bf, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: 9399019373b0fef4fb58eecd6f0d2dfa, type: 3}
+      volume: 0.927
   - text: unlawful transport of excessive vibes across state lines
     audioClip: {fileID: 8300000, guid: 9ef034163e20e5947bbae1c333d15267, type: 3}
     testimonies:
-    - {fileID: 8300000, guid: e858cc1ec8364f642acbb86719f6f00b, type: 3}
-    - {fileID: 8300000, guid: 0e7080d4a558b354a89614d0c5fc03e7, type: 3}
-    - {fileID: 8300000, guid: fc459ddb778d6024db758f68024c059b, type: 3}
-    - {fileID: 8300000, guid: 7e50bd0fa881b544dbd698e68b267cfa, type: 3}
-    - {fileID: 8300000, guid: b5709534fc3e6e34ea15f8fe87a290c7, type: 3}
+    - audioClip: {fileID: 8300000, guid: e858cc1ec8364f642acbb86719f6f00b, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: 0e7080d4a558b354a89614d0c5fc03e7, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: fc459ddb778d6024db758f68024c059b, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: 7e50bd0fa881b544dbd698e68b267cfa, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: b5709534fc3e6e34ea15f8fe87a290c7, type: 3}
+      volume: 0.927
   - text: conspiracy to manufacture excessive whimsey
     audioClip: {fileID: 8300000, guid: ddcf5994b7dc5b544986ad46f9369028, type: 3}
     testimonies:
-    - {fileID: 8300000, guid: 525b0faa87d7c544993a16b23a9a7d5c, type: 3}
-    - {fileID: 8300000, guid: 16e77b08d940640448aed2b6ffba498a, type: 3}
-    - {fileID: 8300000, guid: c5213cb1bfd6558418e0a0cd216e4c3a, type: 3}
-    - {fileID: 8300000, guid: 410ca3dd0a992f241bd91e0993d3ead2, type: 3}
-    - {fileID: 8300000, guid: 5a48d4d7bcc5e3843a78911e931e134c, type: 3}
+    - audioClip: {fileID: 8300000, guid: 525b0faa87d7c544993a16b23a9a7d5c, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: 16e77b08d940640448aed2b6ffba498a, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: c5213cb1bfd6558418e0a0cd216e4c3a, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: 410ca3dd0a992f241bd91e0993d3ead2, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: 5a48d4d7bcc5e3843a78911e931e134c, type: 3}
+      volume: 0.927
   - text: failure to buy girl scout cookies on your way out of the store
     audioClip: {fileID: 8300000, guid: 013355e518f09ef4d8915fb00c8714ad, type: 3}
     testimonies:
-    - {fileID: 8300000, guid: 61eec4185e8fcd840ba253eb09f93e49, type: 3}
-    - {fileID: 8300000, guid: 01d543cd4bc0de146abef246ba72d6f8, type: 3}
-    - {fileID: 8300000, guid: c4ca0cf05798ad242b33757d7b9f5ff9, type: 3}
-    - {fileID: 8300000, guid: 5bbcf44afa1b36d4fbdf1d12bb65f139, type: 3}
-    - {fileID: 8300000, guid: a2c07e5bc290c174db6f9ac563a46e6b, type: 3}
+    - audioClip: {fileID: 8300000, guid: 61eec4185e8fcd840ba253eb09f93e49, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: 01d543cd4bc0de146abef246ba72d6f8, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: c4ca0cf05798ad242b33757d7b9f5ff9, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: 5bbcf44afa1b36d4fbdf1d12bb65f139, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: a2c07e5bc290c174db6f9ac563a46e6b, type: 3}
+      volume: 0.89
   - text: possession of unauthorized fun facts with intent to distribute
     audioClip: {fileID: 8300000, guid: 38d062d23d961b44f8a8a83529d250ba, type: 3}
     testimonies:
-    - {fileID: 8300000, guid: 8510b2e56a23362498759a764adfcb9d, type: 3}
-    - {fileID: 8300000, guid: 2b331217ef2af484b92101f89f464216, type: 3}
-    - {fileID: 8300000, guid: 038cc399047ca5446b74fbe29465a4af, type: 3}
-    - {fileID: 8300000, guid: d26817827b825fa498cab3b36914a40b, type: 3}
-    - {fileID: 8300000, guid: b3764b5e59416204a875575aadfb7513, type: 3}
+    - audioClip: {fileID: 8300000, guid: 8510b2e56a23362498759a764adfcb9d, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: 2b331217ef2af484b92101f89f464216, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: 038cc399047ca5446b74fbe29465a4af, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: d26817827b825fa498cab3b36914a40b, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: b3764b5e59416204a875575aadfb7513, type: 3}
+      volume: 0.932
   - text: impersonating a Jedi without making lightsaber noises
     audioClip: {fileID: 8300000, guid: c3d148176b21dbc4d80bf7fb55608df5, type: 3}
     testimonies:
-    - {fileID: 8300000, guid: 1607032111e217e4a9e8ad51183a29a9, type: 3}
-    - {fileID: 8300000, guid: 165b4e4bb747b7a4e9135d7d4474ea30, type: 3}
-    - {fileID: 8300000, guid: 663161ec57453dc4487adcbd63f61d56, type: 3}
-    - {fileID: 8300000, guid: 15be6aabc9493c642b76530843db2f85, type: 3}
-    - {fileID: 8300000, guid: 092a36290ee42e94db90558c4bed0239, type: 3}
+    - audioClip: {fileID: 8300000, guid: 1607032111e217e4a9e8ad51183a29a9, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: 165b4e4bb747b7a4e9135d7d4474ea30, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: 663161ec57453dc4487adcbd63f61d56, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: 15be6aabc9493c642b76530843db2f85, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: 092a36290ee42e94db90558c4bed0239, type: 3}
+      volume: 0.895
   - text: maliciously good looks with intent to mog
     audioClip: {fileID: 8300000, guid: 809564a51425b3e41b4dccc0240e495e, type: 3}
     testimonies:
-    - {fileID: 8300000, guid: adb7c5bf28b2fa34d8ad18574a319c81, type: 3}
-    - {fileID: 8300000, guid: 4ac0dd4f2271ddb4d85a37ccc6a30fb3, type: 3}
-    - {fileID: 8300000, guid: 2bdbc9afca4f4774d9b085e7f70eb8f5, type: 3}
-    - {fileID: 8300000, guid: 1006c089f76d53943a5af3cb848f275c, type: 3}
-    - {fileID: 8300000, guid: 69e5351dd6e1a90479bc4895badcb80f, type: 3}
+    - audioClip: {fileID: 8300000, guid: adb7c5bf28b2fa34d8ad18574a319c81, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: 4ac0dd4f2271ddb4d85a37ccc6a30fb3, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: 2bdbc9afca4f4774d9b085e7f70eb8f5, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: 1006c089f76d53943a5af3cb848f275c, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: 69e5351dd6e1a90479bc4895badcb80f, type: 3}
+      volume: 0.914
   - text: aggravated misuse of jazz hands
     audioClip: {fileID: 8300000, guid: 60ef3285f4f74824e8d79b475924d619, type: 3}
     testimonies:
-    - {fileID: 8300000, guid: 370d37720042cc3428fd67b777dd7e37, type: 3}
-    - {fileID: 8300000, guid: c8262d2a752902d4fb99215a0c4af177, type: 3}
-    - {fileID: 8300000, guid: fc93e91d779be944daa2ca2e16e8aa17, type: 3}
-    - {fileID: 8300000, guid: c89ffdc09cf3c834095f3e89992bd05e, type: 3}
-    - {fileID: 8300000, guid: b3232722c6ce4f446a39d38fe0a40911, type: 3}
+    - audioClip: {fileID: 8300000, guid: 370d37720042cc3428fd67b777dd7e37, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: c8262d2a752902d4fb99215a0c4af177, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: fc93e91d779be944daa2ca2e16e8aa17, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: c89ffdc09cf3c834095f3e89992bd05e, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: b3232722c6ce4f446a39d38fe0a40911, type: 3}
+      volume: 0.916
   - text: failure to provide scitches to a stray cat that rubbed your leg
     audioClip: {fileID: 8300000, guid: cf10d47f6365bbd4182c547b7956c3a2, type: 3}
     testimonies:
-    - {fileID: 8300000, guid: 8cacbaf59dbb66f4a9f7f1b07332986a, type: 3}
-    - {fileID: 8300000, guid: a62afc77cdaeba34a82f8024e7f7f2dd, type: 3}
-    - {fileID: 8300000, guid: b323d3321e6ff3649b1a5d9a8d19f04b, type: 3}
-    - {fileID: 8300000, guid: b1aa58784c4315641876a8a2e2975521, type: 3}
-    - {fileID: 8300000, guid: fa9302c7213d5ea41a25bcd9b6eee888, type: 3}
+    - audioClip: {fileID: 8300000, guid: 8cacbaf59dbb66f4a9f7f1b07332986a, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: a62afc77cdaeba34a82f8024e7f7f2dd, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: b323d3321e6ff3649b1a5d9a8d19f04b, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: b1aa58784c4315641876a8a2e2975521, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: fa9302c7213d5ea41a25bcd9b6eee888, type: 3}
+      volume: 0.898
   - text: fradulent claims of "just one more episode"
     audioClip: {fileID: 8300000, guid: 7b2312535fc626041b27ba6c2ad5086c, type: 3}
     testimonies:
-    - {fileID: 8300000, guid: e2c8fa6650c5cd64f8ddce340858b904, type: 3}
-    - {fileID: 8300000, guid: dfd29d228ef29ce4c80d3e4fb4653d2d, type: 3}
-    - {fileID: 8300000, guid: 283ed6b9fd13d9a4c918724f58f5b909, type: 3}
-    - {fileID: 8300000, guid: 402d4ab5e3a4f1d41a6aae5abc3d3463, type: 3}
-    - {fileID: 8300000, guid: 93f5aafea84967a4ca53d2106a8af386, type: 3}
+    - audioClip: {fileID: 8300000, guid: e2c8fa6650c5cd64f8ddce340858b904, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: dfd29d228ef29ce4c80d3e4fb4653d2d, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: 402d4ab5e3a4f1d41a6aae5abc3d3463, type: 3}
+      volume: 0.847
+    - audioClip: {fileID: 8300000, guid: 93f5aafea84967a4ca53d2106a8af386, type: 3}
+      volume: 0.911
+    - audioClip: {fileID: 8300000, guid: e2c8fa6650c5cd64f8ddce340858b904, type: 3}
+      volume: 1
   - text: public display of overconfidence in a hardware store
     audioClip: {fileID: 8300000, guid: dd2f042794f6d4a45a02f11e21679f30, type: 3}
     testimonies:
-    - {fileID: 8300000, guid: d7cd17b9d9d6d2e4690c896b25eec5f5, type: 3}
-    - {fileID: 8300000, guid: 883fcf38f3c23734dac8265831bf052c, type: 3}
-    - {fileID: 8300000, guid: 0480d8ced486aad4e8b0241ac0b249f3, type: 3}
-    - {fileID: 8300000, guid: 6f3dc51c194b4f84f9ad3be0752edc30, type: 3}
-    - {fileID: 8300000, guid: 2dfb29310a2a3d24e9eba102ba46f1c7, type: 3}
+    - audioClip: {fileID: 8300000, guid: d7cd17b9d9d6d2e4690c896b25eec5f5, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: 883fcf38f3c23734dac8265831bf052c, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: 0480d8ced486aad4e8b0241ac0b249f3, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: 6f3dc51c194b4f84f9ad3be0752edc30, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: 2dfb29310a2a3d24e9eba102ba46f1c7, type: 3}
+      volume: 0.874
   - text: conspiracy to commit public shenanigans in the third degree
     audioClip: {fileID: 8300000, guid: e41dff72d1d316a458f2e824ea283d8c, type: 3}
     testimonies: []
   - text: possession of an unlicensed sense of humor
     audioClip: {fileID: 8300000, guid: 9811588ee4484fe4f9cd206451437bf7, type: 3}
     testimonies:
-    - {fileID: 8300000, guid: a6897b8b5e7a13c4493ae3aace3bc104, type: 3}
-    - {fileID: 8300000, guid: ffea1a874d1b5d746832231eea550d1d, type: 3}
-    - {fileID: 8300000, guid: b1e30dfee66eeef448ca4de166f6875e, type: 3}
-    - {fileID: 8300000, guid: 93451dbed07d53b488e1959f12d71fdb, type: 3}
-    - {fileID: 8300000, guid: ea2e39dc944038b42b845e33ba572670, type: 3}
+    - audioClip: {fileID: 8300000, guid: a6897b8b5e7a13c4493ae3aace3bc104, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: ffea1a874d1b5d746832231eea550d1d, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: b1e30dfee66eeef448ca4de166f6875e, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: 93451dbed07d53b488e1959f12d71fdb, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: ea2e39dc944038b42b845e33ba572670, type: 3}
+      volume: 0.858
   - text: possession of untaxed Birthday wishes
     audioClip: {fileID: 8300000, guid: 27668deb75cb9034d9b5f3cc17d89dd2, type: 3}
     testimonies:
-    - {fileID: 8300000, guid: 5a7ed910d84bb7648a42bdcfa4575321, type: 3}
-    - {fileID: 8300000, guid: 4e0040a86af1bf64f9068e8a8b707c24, type: 3}
-    - {fileID: 8300000, guid: e30d878e2169c8e4e826080abc43fd7c, type: 3}
-    - {fileID: 8300000, guid: 83747dc44bda14e40a6368b9ff633922, type: 3}
-    - {fileID: 8300000, guid: 85a9b4d6f86e12f45be6bdc188f534bf, type: 3}
-  testimonyVolume: 1.08
+    - audioClip: {fileID: 8300000, guid: 5a7ed910d84bb7648a42bdcfa4575321, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: 4e0040a86af1bf64f9068e8a8b707c24, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: e30d878e2169c8e4e826080abc43fd7c, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: 83747dc44bda14e40a6368b9ff633922, type: 3}
+      volume: 1
+    - audioClip: {fileID: 8300000, guid: 85a9b4d6f86e12f45be6bdc188f534bf, type: 3}
+      volume: 0.879
+  testimonyVolume: 1.3
   startingPlantiffCount: 2
   plantiffs: {fileID: 1077111386}
 --- !u!1 &1794119307
