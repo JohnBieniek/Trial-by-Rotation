@@ -11,8 +11,9 @@ public class PlayerGunShooter : MonoBehaviour
 
     private void Update()
     {
-        if (!GameController.hasStarted)
+        if(!GameController.hasStarted || GameController.Instance.IsGameWonOrLost())
             return;
+
 
         if (Input.GetMouseButton(0) && Time.time >= nextShotTime)
         {
@@ -34,7 +35,7 @@ public class PlayerGunShooter : MonoBehaviour
             (mouseWorld - transform.position).normalized;
         //CircleCollider2D circle = GetComponent<CircleCollider2D>();
 
-        float spinnerRadius = 2f; // adjust to your wheel size
+        float spinnerRadius = 1.5f; // adjust to your wheel size
 
         Vector3 spawnPosition =
             transform.position + (Vector3)(direction * spinnerRadius);

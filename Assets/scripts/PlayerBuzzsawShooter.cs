@@ -5,16 +5,19 @@ public class PlayerBuzzsawShooter : MonoBehaviour
     [Header("Buzzsaw")]
     [SerializeField] private BuzzsawProjectile buzzsawPrefab;
     [SerializeField] private Transform firePoint;
-
-
+    private float nextShotTime;
+    [SerializeField] private float secondsBetweenShots;
     private void Update()
     {
-        if (GameController.hasStarted)
+        if (!GameController.hasStarted || GameController.Instance.IsGameWonOrLost())
+            return;
+
+
+        if (Input.GetMouseButton(0) && Time.time >= nextShotTime)
         {
-            if (Input.GetMouseButtonDown(0))
-            {
-                ShootBuzzsaw();
-            }
+            Debug.Log($"Shot from {gameObject.name} at {Time.time}");
+            ShootBuzzsaw();
+            nextShotTime = Time.time + secondsBetweenShots;
         }
     }
     private void ShootBuzzsaw()
@@ -30,7 +33,7 @@ public class PlayerBuzzsawShooter : MonoBehaviour
             (mouseWorld - transform.position).normalized;
         //CircleCollider2D circle = GetComponent<CircleCollider2D>();
 
-        float spinnerRadius = 2f; // adjust to your wheel size
+        float spinnerRadius = 1.5f; // adjust to your wheel size
 
         Vector3 spawnPosition =
             transform.position + (Vector3)(direction * spinnerRadius);

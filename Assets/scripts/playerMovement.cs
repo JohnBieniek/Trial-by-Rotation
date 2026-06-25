@@ -48,7 +48,7 @@ public class PlayerMovement : MonoBehaviour
             transform.SetParent(wheel.transform, true);
         }
     }
-    
+
     void Update()
     {
         if (!GameController.hasStarted)
@@ -57,7 +57,7 @@ public class PlayerMovement : MonoBehaviour
             rigidBody.angularVelocity = 0f;
             return;
         }
-        if (Keyboard.current.spaceKey.isPressed)
+        if (Keyboard.current.spaceKey.isPressed || Input.GetMouseButton(1))
         {
             float acceleration = spinAcceleration;
 
@@ -83,16 +83,16 @@ public class PlayerMovement : MonoBehaviour
 
         inputDirection = Vector2.zero;
 
-        if (Keyboard.current.aKey.isPressed)
+        if (Keyboard.current.aKey.isPressed || Keyboard.current.leftArrowKey.isPressed)
             inputDirection.x -= 1f;
 
-        if (Keyboard.current.dKey.isPressed)
+        if (Keyboard.current.dKey.isPressed || Keyboard.current.rightArrowKey.isPressed)
             inputDirection.x += 1f;
 
-        if (Keyboard.current.sKey.isPressed)
+        if (Keyboard.current.sKey.isPressed || Keyboard.current.downArrowKey.isPressed)
             inputDirection.y -= 1f;
 
-        if (Keyboard.current.wKey.isPressed)
+        if (Keyboard.current.wKey.isPressed || Keyboard.current.upArrowKey.isPressed)
             inputDirection.y += 1f;
 
         inputDirection = inputDirection.normalized;
@@ -175,8 +175,8 @@ public class PlayerMovement : MonoBehaviour
             ForceMode2D.Impulse
         );
 
-        Debug.Log(
-            $"AI Speed: {aiSpeed:F1}, RPS: {playerRps:F1}, Knockback: {knockbackForce:F1}"
-        );
+        //Debug.Log(
+        //    $"AI Speed: {aiSpeed:F1}, RPS: {playerRps:F1}, Knockback: {knockbackForce:F1}"
+        //);
     }
 }

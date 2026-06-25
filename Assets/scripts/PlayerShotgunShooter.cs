@@ -7,7 +7,7 @@ public class PlayerShotgunShooter : MonoBehaviour
     [SerializeField] private Transform firePoint;
     [SerializeField] private int bulletsPerShot = 5;
     [SerializeField] private float shotgunArcDegrees = 45f;
-    [SerializeField] private float spinnerRadius = 2f;
+    [SerializeField] private float spinnerRadius = 1.5f;
     [SerializeField] private float secondsBetweenShots =3f;
     private float nextShotTime;
     [SerializeField] private AudioClip shotgunSound;
@@ -15,12 +15,12 @@ public class PlayerShotgunShooter : MonoBehaviour
 
     private void Update()
     {
-        if (!GameController.hasStarted)
+        if (!GameController.hasStarted || GameController.Instance.IsGameWonOrLost())
             return;
 
         if (Input.GetMouseButton(0) && Time.time >= nextShotTime)
         {
-            Debug.Log($"Shot from {gameObject.name} at {Time.time}");
+            //Debug.Log($"Shot from {gameObject.name} at {Time.time}");
             ShootBullet();
             nextShotTime = Time.time + secondsBetweenShots;
         }
@@ -29,7 +29,7 @@ public class PlayerShotgunShooter : MonoBehaviour
     {
         if (bulletPrefab == null) return;
         if (bulletsPerShot <= 0) return;
-        shotgunSource.PlayOneShot(shotgunSound);
+        shotgunSource.PlayOneShot(shotgunSound,0.7f);
         Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         mouseWorld.z = 0f;
 

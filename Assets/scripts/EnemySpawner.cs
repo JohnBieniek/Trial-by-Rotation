@@ -69,7 +69,7 @@ public class EnemySpawner : MonoBehaviour
         SimpleAiMovement[] enemies = FindObjectsByType<SimpleAiMovement>(
             FindObjectsSortMode.None
         );
-        Debug.Log($"Found {enemies.Length} existing enemies. Destroying them before spawning new ones.");
+        //Debug.Log($"Found {enemies.Length} existing enemies. Destroying them before spawning new ones.");
         foreach (SimpleAiMovement enemy in enemies)
         {
             Destroy(enemy.gameObject);
@@ -108,7 +108,7 @@ public class EnemySpawner : MonoBehaviour
                 Quaternion.identity,
                 enemyParent
             );
-            Debug.Log($"Spawned enemy {i} - {prefab.name} at {spawnPosition}");
+            //Debug.Log($"Spawned enemy {i} - {prefab.name} at {spawnPosition}");
         }
     }
 
@@ -133,9 +133,9 @@ public class EnemySpawner : MonoBehaviour
             attempts < 20
         );
 
-        Debug.Log(
-            $"Spawn distance from wheel: {Vector2.Distance(spawnPosition, wheelOfJustice.position)} / max {maxSpawnRadius}"
-        );
+        //Debug.Log(
+        //    $"Spawn distance from wheel: {Vector2.Distance(spawnPosition, wheelOfJustice.position)} / max {maxSpawnRadius}"
+        //);
 
         return spawnPosition;
     }

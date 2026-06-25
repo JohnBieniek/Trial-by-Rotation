@@ -51,7 +51,7 @@ public class SimpleAiMovement : MonoBehaviour
         {
             audioSource = gameObject.AddComponent<AudioSource>();
         }
-        Debug.Log("AI Awake: " + gameObject.name);
+        //Debug.Log("AI Awake: " + gameObject.name);
         rb = GetComponent<Rigidbody2D>();
         rb.gravityScale = 0f;
     }

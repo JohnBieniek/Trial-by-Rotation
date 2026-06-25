@@ -7,7 +7,7 @@ public class SpinnerPanel : MonoBehaviour
     [SerializeField] private GameObject[] topPrefabs;
     [SerializeField] private Transform playerSpawnPoint;
 
-    [SerializeField] private float spinSpeed = 180f;
+    [SerializeField] private float spinSpeed = 90f;
     [SerializeField] private float stopTime = 2f;
 
     private bool spinning = true;

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -16,8 +17,9 @@ public class GameController : MonoBehaviour
     [Header("UI")]
     [SerializeField] private GameObject gameOverPanel;
     [SerializeField] private GameObject startPanel;
+    [SerializeField] private GameObject spinnerPanel;
     [SerializeField] private StartPanelAccusation startPanelAccusation;
-
+    
     [Header("Camera")]
     [SerializeField] private Camera mainCamera;
     [SerializeField] private float cameraFollowSpeed = 5f;
@@ -45,6 +47,10 @@ public class GameController : MonoBehaviour
     [SerializeField] private AudioClip gameOverMusicClip;
     [SerializeField] private float gameOverMusicVolume = .18f;
     [SerializeField] private AudioSource gameOverMusicAudioSource;
+
+    [SerializeField] private AudioSource victoryMusicAudioSource;
+    [SerializeField] private AudioClip victoryMusicClip;
+    [SerializeField] private float victoryMusicVolume = .18f;
     [Header("Spinner")]
     [SerializeField] private AudioSource spinnerAudioSource;
     [SerializeField] private float spinnerVolume = .18f;
@@ -56,7 +62,13 @@ public class GameController : MonoBehaviour
     private int plaintiffsRefutedThisTrial;
     private readonly Dictionary<Transform, Transform> originalParents = new();
 
-    public static GameController Instance { get; private set; } = new GameController();
+    public static GameController Instance { get; private set; }
+
+    void Awake()
+    {
+
+        Instance = this;
+    }
     public void LoadRandomLayout()
     {
         ReturnRotatingObjects();
@@ -114,6 +126,10 @@ public class GameController : MonoBehaviour
         {
             winPanel.SetActive(false);
         }
+        if (spinnerPanel != null)
+        {
+            spinnerPanel.SetActive(false);
+        }
 
         if (maxDistanceFromWheelCenter <= 0f)
         {
@@ -132,7 +148,9 @@ public class GameController : MonoBehaviour
         {
             if (startPanel != null && startPanel.activeInHierarchy)
             {
-                StartFirstTrial();
+                startPanelAccusation.PlayAccusationAudioOnce();
+
+                startSpinnerPanel();
             }
             else if (winPanel != null && winPanel.activeInHierarchy)
             {
@@ -166,7 +184,7 @@ public class GameController : MonoBehaviour
 
         if (distance > maxDistanceFromWheelCenter + wheelEdgeBuffer)
         {
-            Debug.Log("distance at game over: " + distance);
+            //Debug.Log("distance at game over: " + distance);
             GameOver();
 
         }
@@ -178,6 +196,8 @@ public class GameController : MonoBehaviour
     {
         if (startPanel != null && startPanel.activeInHierarchy)
             return;
+        if (spinnerPanel != null && spinnerPanel.activeInHierarchy)
+            return;
         if (!hasWon && hasStarted
             && !isGameOver) { 
             enemiesRemaining = FindObjectsByType<SimpleAiMovement>(
@@ -188,7 +208,7 @@ public class GameController : MonoBehaviour
             if (enemiesRemaining == 0)
             {
                 JudgeAudioManager.Instance.SetGameOver(true);
-                Debug.Log("All enemies defeated! Player wins!");
+                //Debug.Log("All enemies defeated! Player wins!");
                 WinTrial();
             }
         }
@@ -205,6 +225,7 @@ public class GameController : MonoBehaviour
         {
             audioSource.PlayOneShot(innocentClip);
         }
+        PlayVictoryMusic();
         ParticleSystem[] particles = FindObjectsByType<ParticleSystem>(
     FindObjectsSortMode.None);
 
@@ -241,10 +262,32 @@ public class GameController : MonoBehaviour
         refutedText.text = "Most plaintiffs refuted in a trial: " + highestPlaintiffsRefuted;
     }
 
+
+    public void startSpinnerPanel()
+    {
+        if (startPanel != null)
+            startPanel.SetActive(false);
+
+        if (gameOverPanel != null)
+            gameOverPanel.SetActive(false);
+
+        if (winPanel != null)
+            winPanel.SetActive(false);
+
+        startPanelAccusation.PlayAccusationAudioOnce();
+        if (spinnerPanel != null)
+        {
+            spinnerPanel.SetActive(true);
+
+            WeaponSpinner spinner = spinnerPanel.GetComponent<WeaponSpinner>();
+            if (spinner != null)
+                spinner.ResetSpinner();
+        }
+    }
     //Called by the start button on the start panel to start every trial, including the first one
     public void StartFirstTrial()
     {
-        Debug.Log("StartFirstTrial clicked");
+        //Debug.Log("StartFirstTrial clicked");
         hasStarted = true;
         isGameOver = false;
         hasWon = false;
@@ -257,6 +300,9 @@ public class GameController : MonoBehaviour
         if (winPanel != null)
             winPanel.SetActive(false);
 
+        if (spinnerPanel != null)
+            spinnerPanel.SetActive(false);
+
         PlayMusic();
         StartSpinnerLoop();
         LoadRandomLayout();
@@ -266,8 +312,8 @@ public class GameController : MonoBehaviour
 
         SpawnPlayer();
         EnemySpawner.Instance.SpawnEnemies();
-        float maxSpeed = 1 + ((StartPanelAccusation.Instance.GetPlaintiffCount() - 3) / 2f) * 3f;
-        Debug.Log("maxSpeed: " + maxSpeed);
+        float maxSpeed = 4 + ((StartPanelAccusation.Instance.GetPlaintiffCount() - 3) / 2f) * 3f;
+        //Debug.Log("maxSpeed: " + maxSpeed);
         GameObject wheelObject = GameObject.FindWithTag("Wheel of Justice");
 
         if (wheelObject != null)
@@ -280,7 +326,7 @@ public class GameController : MonoBehaviour
 
                 float newWheelSpeed = Random.Range(maxSpeed/2, maxSpeed);
 
-                Debug.Log("Setting wheel speed to " + newWheelSpeed);
+                //Debug.Log("Setting wheel speed to " + newWheelSpeed);
 
                 wheel.SetRotationSpeed(newWheelSpeed);
             }
@@ -314,7 +360,7 @@ public class GameController : MonoBehaviour
 
         musicAudioSource.clip = musicClip;
         musicAudioSource.loop = true;
-        Debug.Log("Playing music clip: " + musicClip.name);
+        //Debug.Log("Playing music clip: " + musicClip.name);
         musicAudioSource.volume = musicVolume;
         if (musicAudioSource.time > 0)
         {
@@ -326,6 +372,25 @@ public class GameController : MonoBehaviour
         }
     }
 
+    private void PlayVictoryMusic()
+    {
+        if (victoryMusicAudioSource == null || victoryMusicClip == null)
+            return;
+
+        victoryMusicAudioSource.clip = victoryMusicClip;
+        victoryMusicAudioSource.loop = true;
+        //Debug.Log("Playing music clip: " + victoryMusicClip.name);
+        victoryMusicAudioSource.volume = victoryMusicVolume;
+        if (victoryMusicAudioSource.time > 0)
+        {
+            victoryMusicAudioSource.UnPause();
+        }
+        else
+        {
+            victoryMusicAudioSource.Play();
+        }
+    }
+
     private void PlayGameOverMusic()
     {
         if (gameOverMusicAudioSource == null || gameOverMusicClip == null)
@@ -333,7 +398,7 @@ public class GameController : MonoBehaviour
 
         gameOverMusicAudioSource.clip = gameOverMusicClip;
         gameOverMusicAudioSource.loop = true;
-        Debug.Log("Playing music clip: " + gameOverMusicClip.name);
+        //Debug.Log("Playing music clip: " + gameOverMusicClip.name);
         gameOverMusicAudioSource.volume = gameOverMusicVolume;
         if (gameOverMusicAudioSource.time > 0)
         {
@@ -373,7 +438,7 @@ public class GameController : MonoBehaviour
     //Called by the win button on the win panel to start a new trial
     public void StartNewTrial()
     {
-        Debug.Log("StartNewTrial clicked");
+        //Debug.Log("StartNewTrial clicked");
         hasStarted= true;
         hasWon = false;
         startPanel.SetActive(true);
@@ -386,6 +451,7 @@ public class GameController : MonoBehaviour
 
         Time.timeScale = 1f;
         gameOverMusicAudioSource.Pause();
+        victoryMusicAudioSource.Pause();
         audioSource.Stop();
         //UnityEngine.SceneManagement.Scene currentScene =
         //    UnityEngine.SceneManagement.SceneManager.GetActiveScene();
@@ -409,7 +475,7 @@ public class GameController : MonoBehaviour
 
     private void GameOver()
     {
-        Debug.Log("GAME OVER TRIGGERED");
+        //Debug.Log("GAME OVER TRIGGERED");
         startPanelAccusation.GameOver();
         JudgeAudioManager.Instance.SetGameOver(true);
         isGameOver = true;
@@ -431,8 +497,8 @@ public class GameController : MonoBehaviour
             FindObjectsSortMode.None
         ).Length;
         int refutedThisTrial = (int)Mathf.Max(0, StartPanelAccusation.Instance.GetPlaintiffCount() -enemiesRemaining);
-        Debug.Log("plantiffs this trial:" + StartPanelAccusation.Instance.GetPlaintiffCount());
-        Debug.Log("plaintiffs refuted this trial: " + refutedThisTrial);
+        //Debug.Log("plantiffs this trial:" + StartPanelAccusation.Instance.GetPlaintiffCount());
+        //Debug.Log("plaintiffs refuted this trial: " + refutedThisTrial);
         highestPlaintiffsRefuted = Mathf.Max(
             highestPlaintiffsRefuted,
             refutedThisTrial
@@ -460,6 +526,7 @@ public class GameController : MonoBehaviour
         gameOverPanel.SetActive(false);
         winPanel.SetActive(false);
         JudgeAudioManager.Instance.SetGameOver(false);
+        victoryMusicAudioSource.Pause();
         gameOverMusicAudioSource.Pause();
         StartPanelAccusation.Instance.ShowNextAccusation();
         //Scene currentScene = SceneManager.GetActiveScene();

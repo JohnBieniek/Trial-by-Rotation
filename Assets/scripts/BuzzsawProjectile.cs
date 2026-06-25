@@ -45,11 +45,11 @@ public class BuzzsawProjectile : MonoBehaviour
     {
         travelDirection = direction.normalized;
         rb.linearVelocity = direction.normalized * speed;
-        Debug.Log("Buzzsaw speed: " + rb.linearVelocity.magnitude);
+        //Debug.Log("Buzzsaw speed: " + rb.linearVelocity.magnitude);
         Collider2D playerCollider = GameObject
             .FindGameObjectWithTag("Player")
             .GetComponent<Collider2D>();
-
+    if (playerCollider != null && sawCollider!=null) 
             Physics2D.IgnoreCollision(sawCollider, playerCollider);
     
 
@@ -66,6 +66,12 @@ public class BuzzsawProjectile : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (hasDetonated) return;
+        if (!GameController.hasStarted  || GameController.Instance.IsGameWonOrLost())
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         if (collision.gameObject.CompareTag("Player"))
             return;
         if (collision.gameObject == owner) return;

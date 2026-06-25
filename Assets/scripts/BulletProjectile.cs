@@ -44,7 +44,7 @@ public class BulletProjectile : MonoBehaviour
     {
         travelDirection = direction.normalized;
         rb.linearVelocity = direction.normalized * speed;
-        Debug.Log("Buzzsaw speed: " + rb.linearVelocity.magnitude);
+        //Debug.Log("Buzzsaw speed: " + rb.linearVelocity.magnitude);
         Collider2D playerCollider = GameObject
             .FindGameObjectWithTag("Player")
             .GetComponent<Collider2D>();
@@ -54,7 +54,7 @@ public class BulletProjectile : MonoBehaviour
 
 
        
-        Destroy(gameObject, 10f);
+        Destroy(gameObject, 5f);
     }
 
     private void Update()
@@ -68,7 +68,11 @@ public class BulletProjectile : MonoBehaviour
         if (collision.gameObject.CompareTag("Player"))
             return;
         if (collision.gameObject == owner) return;
-
+        if (!GameController.hasStarted || GameController.Instance.IsGameWonOrLost())
+        {
+            Destroy(gameObject);
+            return;
+        }
         if (collision.gameObject.CompareTag(enemyTag))
         {
             Rigidbody2D enemyRb = collision.gameObject.GetComponent<Rigidbody2D>();
