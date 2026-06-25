@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -41,14 +42,65 @@ public class GameController : MonoBehaviour
     [SerializeField] private AudioSource musicAudioSource;
     [SerializeField] private float musicVolume = .18f;
     [SerializeField] private AudioClip musicClip;
-
+    [SerializeField] private AudioClip gameOverMusicClip;
+    [SerializeField] private float gameOverMusicVolume = .18f;
+    [SerializeField] private AudioSource gameOverMusicAudioSource;
     [Header("Spinner")]
     [SerializeField] private AudioSource spinnerAudioSource;
     [SerializeField] private float spinnerVolume = .18f;
     [SerializeField] private AudioClip spinnerClip;
     [SerializeField] private TextMeshProUGUI refutedText;
     private int highestPlaintiffsRefuted=0;
+    [SerializeField] private GameObject[] layouts;
 
+    private int plaintiffsRefutedThisTrial;
+    private readonly Dictionary<Transform, Transform> originalParents = new();
+
+    public static GameController Instance { get; private set; } = new GameController();
+    public void LoadRandomLayout()
+    {
+        ReturnRotatingObjects();
+
+        foreach (GameObject layout in layouts)
+            layout.SetActive(false);
+
+        int index = Random.Range(0, layouts.Length);
+        GameObject selectedLayout = layouts[index];
+
+        selectedLayout.SetActive(true);
+
+        AttachRotatingObjects(selectedLayout.transform);
+
+        Debug.Log("activated layout: " + selectedLayout.name);
+    }
+
+    private void AttachRotatingObjects(Transform selectedLayout)
+    {
+        foreach (Transform child in selectedLayout.GetComponentsInChildren<Transform>(true))
+        {
+            if (!child.CompareTag("RotatesWithWheel"))
+                continue;
+
+            if (!originalParents.ContainsKey(child))
+                originalParents.Add(child, child.parent);
+
+            child.SetParent(wheelOfJustice, true);
+        }
+    }
+
+    private void ReturnRotatingObjects()
+    {
+        foreach (var pair in originalParents)
+        {
+            Transform obj = pair.Key;
+            Transform parent = pair.Value;
+
+            if (obj != null && parent != null)
+                obj.SetParent(parent, true);
+        }
+
+        originalParents.Clear();
+    }
     private void Start()
     {
 
@@ -171,6 +223,24 @@ public class GameController : MonoBehaviour
         
     }
 
+    public void SetPlaintiffsRefutedThisTrial()
+    {
+        int enemiesRemaining = FindObjectsByType<SimpleAiMovement>(
+            FindObjectsSortMode.None
+        ).Length;
+        plaintiffsRefutedThisTrial = (int)Mathf.Max(
+            0,
+            StartPanelAccusation.Instance.startingPlantiffCountThisTrial - enemiesRemaining
+        );
+
+        highestPlaintiffsRefuted = Mathf.Max(
+            highestPlaintiffsRefuted,
+            plaintiffsRefutedThisTrial
+        );
+
+        refutedText.text = "Most plaintiffs refuted in a trial: " + highestPlaintiffsRefuted;
+    }
+
     //Called by the start button on the start panel to start every trial, including the first one
     public void StartFirstTrial()
     {
@@ -178,7 +248,7 @@ public class GameController : MonoBehaviour
         hasStarted = true;
         isGameOver = false;
         hasWon = false;
-
+        plaintiffsRefutedThisTrial = 0;
         Time.timeScale = 1f;
 
         if (gameOverPanel != null)
@@ -189,7 +259,7 @@ public class GameController : MonoBehaviour
 
         PlayMusic();
         StartSpinnerLoop();
-
+        LoadRandomLayout();
         startPanelAccusation.StartGame();
         if (startPanel != null)
             startPanel.SetActive(false);
@@ -255,6 +325,25 @@ public class GameController : MonoBehaviour
             musicAudioSource.Play();
         }
     }
+
+    private void PlayGameOverMusic()
+    {
+        if (gameOverMusicAudioSource == null || gameOverMusicClip == null)
+            return;
+
+        gameOverMusicAudioSource.clip = gameOverMusicClip;
+        gameOverMusicAudioSource.loop = true;
+        Debug.Log("Playing music clip: " + gameOverMusicClip.name);
+        gameOverMusicAudioSource.volume = gameOverMusicVolume;
+        if (gameOverMusicAudioSource.time > 0)
+        {
+            gameOverMusicAudioSource.UnPause();
+        }
+        else
+        {
+            gameOverMusicAudioSource.Play();
+        }
+    }
     private void SpawnPlayer()
     {
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
@@ -296,6 +385,7 @@ public class GameController : MonoBehaviour
         }
 
         Time.timeScale = 1f;
+        gameOverMusicAudioSource.Pause();
         audioSource.Stop();
         //UnityEngine.SceneManagement.Scene currentScene =
         //    UnityEngine.SceneManagement.SceneManager.GetActiveScene();
@@ -331,7 +421,7 @@ public class GameController : MonoBehaviour
         }
         ParticleSystem[] particles = FindObjectsByType<ParticleSystem>(
     FindObjectsSortMode.None);
-
+        PlayGameOverMusic();
         foreach (ParticleSystem particle in particles)
         {
             Destroy(particle.gameObject);
@@ -351,7 +441,7 @@ public class GameController : MonoBehaviour
             highestPlaintiffsRefuted,
             StartPanelAccusation.Instance.GetPlaintiffCount()-3
         );
-        refutedText.text = "Most plantiffs refuted in a trial: " + highestPlaintiffsRefuted.ToString();
+        SetPlaintiffsRefutedThisTrial();
         SpawnPlayer();
         gameOverPanel.SetActive(true);
         gameOverPanel.transform.SetAsLastSibling();
@@ -370,6 +460,7 @@ public class GameController : MonoBehaviour
         gameOverPanel.SetActive(false);
         winPanel.SetActive(false);
         JudgeAudioManager.Instance.SetGameOver(false);
+        gameOverMusicAudioSource.Pause();
         StartPanelAccusation.Instance.ShowNextAccusation();
         //Scene currentScene = SceneManager.GetActiveScene();
         //SceneManager.LoadScene(currentScene.name);

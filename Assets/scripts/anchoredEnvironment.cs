@@ -1,18 +1,26 @@
+
 using UnityEngine;
 
 public class AnchoredEnvironment : MonoBehaviour
 {
-    private void Start()
-    {
-        GameObject wheel = GameObject.FindWithTag("Wheel of Justice");
+    private Transform originalParent;
 
-        if (wheel != null)
-        {
-            transform.SetParent(wheel.transform, true);
-        }
-        else
-        {
-            Debug.LogError("Could not find GameObject named 'Wheel of Justice'");
-        }
+    private void Awake()
+    {
+        originalParent = transform.parent;
+    }
+
+    public void AttachToWheel(Transform wheel)
+    {
+        if (wheel == null) return;
+
+        transform.SetParent(wheel, true);
+    }
+
+    public void ReturnToLayout()
+    {
+        if (originalParent == null) return;
+
+        transform.SetParent(originalParent, true);
     }
 }

@@ -37,6 +37,7 @@ public class StartPanelAccusation : MonoBehaviour, IPointerDownHandler
     [SerializeField] private float testimonyVolume = 2f;
  
     [SerializeField] private float startingPlantiffCount = 3;
+    public float startingPlantiffCountThisTrial = 3;
     private float plantiffCount = 0;
     private readonly List<int> remainingAccusations = new();
     private List<Testimony> remainingTestimonies;
@@ -105,7 +106,7 @@ public class StartPanelAccusation : MonoBehaviour, IPointerDownHandler
         if(plantiffCount == 0)
             plantiffCount = 3;
         else plantiffCount += 2;
-        
+        startingPlantiffCountThisTrial = plantiffCount;
 
 
         plantiffs.text = "Number of plantiffs: " + plantiffCount;

@@ -29,6 +29,8 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField] private float verticalForceMultiplier = 1.5f;
 
+
+
     private void Awake()
     {
         rigidBody = GetComponent<Rigidbody2D>();
@@ -57,7 +59,12 @@ public class PlayerMovement : MonoBehaviour
         }
         if (Keyboard.current.spaceKey.isPressed)
         {
-            rigidBody.angularVelocity += spinAcceleration * Time.deltaTime;
+            float acceleration = spinAcceleration;
+
+            if (rigidBody.angularVelocity < 0f)
+                acceleration *= 2f;
+
+            rigidBody.angularVelocity += acceleration * Time.deltaTime;
         }
         else
         {
@@ -65,7 +72,7 @@ public class PlayerMovement : MonoBehaviour
 
             if (Mathf.Abs(currentSpin) > 0f)
             {
-                currentSpin -= Mathf.Sign(currentSpin) * 10 * Time.deltaTime;
+                currentSpin -= Mathf.Sign(currentSpin) * 10f * Time.deltaTime;
 
                 if (Mathf.Sign(currentSpin) != Mathf.Sign(rigidBody.angularVelocity))
                     currentSpin = 0f;

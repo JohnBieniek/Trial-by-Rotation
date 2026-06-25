@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 86628920968486507}
   - component: {fileID: 5765359678638426433}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Isometric Diamond (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -101,7 +101,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2978983483764837537}
   - component: {fileID: 7483129142087243737}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Isometric Diamond
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -194,7 +194,7 @@ GameObject:
   - component: {fileID: -3633230158366121106}
   - component: {fileID: -2100019466846538053}
   - component: {fileID: 8083486539790050522}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Buzzsaw
   m_TagString: Projectile
   m_Icon: {fileID: 0}
@@ -242,6 +242,7 @@ MonoBehaviour:
   buzzsawLoop: {fileID: 0}
   speed: 23.3
   spinSpeed: 630.7
+  deathExplosionPrefab: {fileID: 947545084519945503, guid: 3c6b4f25a21763e4bb15cb6f9ecc4553, type: 3}
 --- !u!50 &-2100019466846538053
 Rigidbody2D:
   serializedVersion: 5
@@ -315,7 +316,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3585767452142790879}
   - component: {fileID: 4227945062051983405}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Audio Source
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -444,7 +445,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4098644180698008054}
   - component: {fileID: 7148884990247018887}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Isometric Diamond (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -535,7 +536,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8015425431554181043}
   - component: {fileID: 4760271575131760362}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Circle
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -2,7 +2,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(Collider2D))]
-public class BuzzsawProjectile : MonoBehaviour
+public class BulletProjectile : MonoBehaviour
 {
     [Header("Detonation")]
     [SerializeField] private AudioClip explosionSound;
@@ -10,20 +10,20 @@ public class BuzzsawProjectile : MonoBehaviour
 
     [Header("Enemy")]
     [SerializeField] private string enemyTag = "AI";
-    [SerializeField] private float stunDuration = .5f;
+    [SerializeField] private float stunDuration = .25f;
     private Rigidbody2D rb;
-    private Collider2D sawCollider;
+    [SerializeField]
+    private Collider2D bulletCollider;
     private GameObject owner;
     [SerializeField] private float knockbackAmount;
 
-    [SerializeField] private AudioSource buzzsawAudio;
-    [SerializeField] private AudioClip buzzsawLoop;
+    [SerializeField] private AudioSource bulletAudio;
+
     public float KnockbackAmount => knockbackAmount;
     [SerializeField] private float speed;
     private bool hasDetonated = false;
     private Vector2 travelDirection;
     public Vector2 TravelDirection => travelDirection;
-    [SerializeField] private float spinSpeed = 720f;
 
     [SerializeField] private GameObject deathExplosionPrefab;
     private void Awake()
@@ -33,12 +33,11 @@ public class BuzzsawProjectile : MonoBehaviour
         rb.gravityScale = 0;
         rb.linearDamping = 0;
         rb.angularDamping = 0;
-        buzzsawAudio = GetComponent<AudioSource>();
+        bulletAudio = GetComponent<AudioSource>();
 
-        if (buzzsawAudio != null)
+        if (bulletAudio != null)
         {
-            buzzsawAudio.loop = true;
-            buzzsawAudio.Play();
+            bulletAudio.Play();
         }
     }
     public void Launch(Vector2 direction)
@@ -50,7 +49,7 @@ public class BuzzsawProjectile : MonoBehaviour
             .FindGameObjectWithTag("Player")
             .GetComponent<Collider2D>();
 
-            Physics2D.IgnoreCollision(sawCollider, playerCollider);
+            Physics2D.IgnoreCollision(bulletCollider, playerCollider);
     
 
 
@@ -61,7 +60,7 @@ public class BuzzsawProjectile : MonoBehaviour
     private void Update()
     {
 
-        transform.Rotate(0f, 0f, spinSpeed * Time.deltaTime);
+      
     }
     private void OnCollisionEnter2D(Collision2D collision)
     {
@@ -95,9 +94,9 @@ public class BuzzsawProjectile : MonoBehaviour
     {
         hasDetonated = true;
 
-        if (buzzsawAudio != null)
+        if (bulletAudio != null)
         {
-            buzzsawAudio.Stop();
+            bulletAudio.Stop();
         }
         if (explosionSound != null)
         {

@@ -1,28 +1,23 @@
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody2D))]
 public class BladeController : MonoBehaviour
 {
-    [SerializeField] private AudioClip clank1;
+    [SerializeField] private float rotationSpeedDegreesPerSecond = 244f;
 
-    [SerializeField][Range(0f, 1f)] private float tinkVolume = 1f;
-
-    private AudioSource audioSource;
+    private Rigidbody2D rb;
 
     private void Awake()
     {
-        audioSource = GetComponent<AudioSource>();
-
-        if (audioSource == null)
-        {
-            audioSource = gameObject.AddComponent<AudioSource>();
-        }
+        rb = GetComponent<Rigidbody2D>();
+        rb.bodyType = RigidbodyType2D.Kinematic;
+        rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+        rb.interpolation = RigidbodyInterpolation2D.Interpolate;
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void FixedUpdate()
     {
-        if (clank1 != null)
-        {
-            audioSource.PlayOneShot(clank1, tinkVolume);
-        }
+        float nextRotation = rb.rotation + rotationSpeedDegreesPerSecond * Time.fixedDeltaTime;
+        rb.MoveRotation(nextRotation);
     }
 }
