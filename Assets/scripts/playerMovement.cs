@@ -15,7 +15,7 @@ public class PlayerMovement : MonoBehaviour
 
     private Rigidbody2D rigidBody;
     private Vector2 inputDirection;
-
+    public float RotationalSpeed => rigidBody.angularVelocity;
 
     [Header("Knockback")]
     [SerializeField] private float knockbackMultiplier = 2f;
@@ -24,8 +24,8 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField]
     private float rotationSpeed = -90f; // degrees per second
-    [SerializeField] private float spinAcceleration = 500f;
-    [SerializeField] private float maxRotationalSpeed = 1080f;
+    [SerializeField] private float spinAcceleration = 1500f;
+    [SerializeField] private float maxRotationalSpeed = 10800f;
 
     [SerializeField] private float verticalForceMultiplier = 1.5f;
 
@@ -55,10 +55,25 @@ public class PlayerMovement : MonoBehaviour
             rigidBody.angularVelocity = 0f;
             return;
         }
-        if (Keyboard.current.spaceKey.wasPressedThisFrame)
+        if (Keyboard.current.spaceKey.isPressed)
         {
-            rigidBody.angularVelocity += 300f;
+            rigidBody.angularVelocity += spinAcceleration * Time.deltaTime;
         }
+        else
+        {
+            float currentSpin = rigidBody.angularVelocity;
+
+            if (Mathf.Abs(currentSpin) > 0f)
+            {
+                currentSpin -= Mathf.Sign(currentSpin) * 10 * Time.deltaTime;
+
+                if (Mathf.Sign(currentSpin) != Mathf.Sign(rigidBody.angularVelocity))
+                    currentSpin = 0f;
+
+                rigidBody.angularVelocity = currentSpin;
+            }
+        }
+
         inputDirection = Vector2.zero;
 
         if (Keyboard.current.aKey.isPressed)
@@ -124,25 +139,37 @@ public class PlayerMovement : MonoBehaviour
         if (!collision.gameObject.CompareTag("AI"))
             return;
 
-        Rigidbody2D aiRigidBody = collision.gameObject.GetComponent<Rigidbody2D>();
-
-        if (aiRigidBody == null)
+        Rigidbody2D aiRb = collision.gameObject.GetComponent<Rigidbody2D>();
+        if (aiRb == null)
             return;
-
 
         ContactPoint2D contact = collision.GetContact(0);
 
         Vector2 knockbackDirection =
             ((Vector2)transform.position - contact.point).normalized;
 
-        float aiSpeed = aiRigidBody.linearVelocity.magnitude;
-        float aiSpin = Mathf.Abs(aiRigidBody.angularVelocity);
+        float aiSpeed = Mathf.Clamp(aiRb.linearVelocity.magnitude, 5f, 30f);
+        float playerRps = Mathf.Abs(rigidBody.angularVelocity) / 360f;
+
+        // 0 at 0 RPS, 1 at 25 RPS
+        float spinFactor = Mathf.Clamp01(playerRps / 25f);
+
+        // Smooth falloff
+        spinFactor = spinFactor * spinFactor;
 
         float knockbackForce =
-            (aiSpeed + aiSpin * spinKnockbackMultiplier)
-            * knockbackMultiplier;
+     aiSpeed * Mathf.Lerp(1.3f, 0.2f, spinFactor);
 
-        knockbackForce = Mathf.Clamp(knockbackForce, 0f, maxKnockback);
-        rigidBody.AddForce(knockbackDirection * knockbackForce, ForceMode2D.Impulse);
+        knockbackForce *= knockbackMultiplier;
+        knockbackForce = Mathf.Clamp(knockbackForce, 3f, maxKnockback);
+
+        rigidBody.AddForce(
+            knockbackDirection * knockbackForce,
+            ForceMode2D.Impulse
+        );
+
+        Debug.Log(
+            $"AI Speed: {aiSpeed:F1}, RPS: {playerRps:F1}, Knockback: {knockbackForce:F1}"
+        );
     }
 }

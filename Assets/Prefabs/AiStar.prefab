@@ -200,7 +200,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7cf8e23037638944bb42db4f778396f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WheelOfJustice
-  rotationSpeed: 706.9
 --- !u!60 &4358356487618770478
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -302,10 +301,17 @@ MonoBehaviour:
   wheelOfJustice: {fileID: 0}
   wheelRadius: 49.99
   deathBuffer: 0.25
-  explosionVolume: 6.24
+  explosionVolume: 0.68
+  deathSounds:
+  - {fileID: 8300000, guid: 9f78d8c79b244ac43897254b4ea24107, type: 3}
+  - {fileID: 8300000, guid: 8730656b8ecb6784a9aca7952da5281a, type: 3}
+  - {fileID: 8300000, guid: ae8aa04f98ac99941a5a2123de71950c, type: 3}
+  - {fileID: 8300000, guid: cff164ea3f5eb8c4a8e93ee696ef234d, type: 3}
+  - {fileID: 8300000, guid: f599c39745ddbad408bfc8e3de34368a, type: 3}
   explosionSound: {fileID: 8300000, guid: 228f31d34c3d49e49adb274b6761f32e, type: 3}
-  knockbackMultiplier: 6.44
-  spinKnockbackMultiplier: 0.002
+  deathExplosionPrefab: {fileID: 947545084519945503, guid: 46dc58c30eda08c40b36c29c9466cbe5, type: 3}
+  knockbackMultiplier: 1.98
+  spinKnockbackMultiplier: 0.01
   maxKnockback: 466.3
   knockbackStunTime: 0.42
   stunDuration: 0.33

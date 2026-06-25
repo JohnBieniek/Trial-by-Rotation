@@ -16,7 +16,9 @@ public class SimpleAiMovement : MonoBehaviour
     [SerializeField] private float wheelRadius = 30f;
     [SerializeField] private float deathBuffer = 1f;
     [SerializeField] private float explosionVolume = 1f;
+    [SerializeField] private AudioClip[] deathSounds;
     [SerializeField] private AudioClip explosionSound;
+    [SerializeField] private GameObject deathExplosionPrefab;
 
     [Header("Knockback")]
     [SerializeField] private float knockbackMultiplier = 2f;
@@ -34,10 +36,13 @@ public class SimpleAiMovement : MonoBehaviour
     [SerializeField] private AudioClip clang1;
 
     private AudioSource audioSource;
+    private ContactPoint2D contactPoint;
+
+    private Vector2 knockbacksDirection;
 
 
 
- 
+
     private void Awake()
     {
         audioSource = GetComponent<AudioSource>();
@@ -92,10 +97,7 @@ public class SimpleAiMovement : MonoBehaviour
             return;
         }
         rb.angularVelocity = 1500f;
-        if (Time.time < stunnedUntil)
-        {
-            return;
-        }
+
         if (Time.time < nextActionTime)
             return;
 
@@ -125,13 +127,23 @@ public class SimpleAiMovement : MonoBehaviour
 
         if (distance > wheelRadius - deathBuffer)
         {
-            if (explosionSound != null)
+            if (deathExplosionPrefab != null)
             {
-                AudioSource.PlayClipAtPoint(
-                    explosionSound,
-                    Camera.main.transform.position,
-                    explosionVolume
+                Instantiate(
+                    deathExplosionPrefab,
+                    transform.position,
+                    Quaternion.identity
                 );
+            }
+            if (audioSource != null && deathSounds.Length > 0)
+            {
+                AudioClip randomClip =
+                    deathSounds[Random.Range(0, deathSounds.Length)];
+                AudioSource.PlayClipAtPoint(
+                   randomClip,
+                   Camera.main.transform.position,
+                   explosionVolume
+               );
             }
 
             if (StartPanelAccusation.Instance != null && !StartPanelAccusation.Instance.IsPlaying())
@@ -153,6 +165,26 @@ public class SimpleAiMovement : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        if (collision.gameObject.CompareTag("Projectile"))
+        {
+            BuzzsawProjectile projectile =
+                collision.gameObject.GetComponent<BuzzsawProjectile>();
+
+            if (projectile != null)
+            {
+                rb.AddForce(
+                    projectile.TravelDirection * projectile.KnockbackAmount,
+                    ForceMode2D.Impulse
+                );
+            }
+
+            isStunned = true;
+            stunEndsAt = Time.time + stunDuration;
+            nextActionTime = stunEndsAt + actionDelay;
+
+            return;
+        }
+
         if (!collision.gameObject.CompareTag("Player"))
             return;
 
@@ -160,7 +192,6 @@ public class SimpleAiMovement : MonoBehaviour
 
         if (playerRb == null)
             return;
-
 
         if (clang1 != null)
         {
@@ -180,8 +211,9 @@ public class SimpleAiMovement : MonoBehaviour
             * knockbackMultiplier;
 
         knockbackForce = Mathf.Clamp(knockbackForce, 0f, maxKnockback);
+
         rb.AddForce(knockbackDirection * knockbackForce, ForceMode2D.Impulse);
-        nextActionTime = Time.time + actionDelay;
+
         isStunned = true;
         stunEndsAt = Time.time + stunDuration;
         nextActionTime = stunEndsAt + actionDelay;

@@ -24,7 +24,7 @@ public class StartPanelAccusation : MonoBehaviour, IPointerDownHandler
     [SerializeField] private Accusation[] accusations;
     [SerializeField] private float testimonyVolume = 2f;
  
-    [SerializeField] private float startingPlantiffCount = 2;
+    [SerializeField] private float startingPlantiffCount = 3;
     private float plantiffCount = 0;
     private readonly List<int> remainingAccusations = new();
     private readonly List<AudioClip> remainingTestimonies = new();
@@ -90,8 +90,9 @@ public class StartPanelAccusation : MonoBehaviour, IPointerDownHandler
    
         accusationText.text = "You stand accused of " + currentAccusation.text + "!";
 
-     
-            plantiffCount += 3;
+        if(plantiffCount == 0)
+            plantiffCount = 3;
+        else plantiffCount += 2;
         
 
 
@@ -160,7 +161,7 @@ public class StartPanelAccusation : MonoBehaviour, IPointerDownHandler
     {
         Debug.Log("Starting testimony loop with " + remainingTestimonies.Count + " testimonies.");
         PlayAccusationAudioOnce();
-        yield return new WaitForSeconds(9.5f);
+        yield return new WaitForSeconds(15.5f);
 
         while (remainingTestimonies.Count > 0)
         {

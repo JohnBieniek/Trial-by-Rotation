@@ -15,7 +15,6 @@ public class EnemySpawner : MonoBehaviour
 
     private Transform wheelOfJustice;
     private Transform player;
-
     private void Awake()
     {
         if (Instance != null && Instance != this)

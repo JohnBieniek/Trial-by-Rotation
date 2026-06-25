@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -14,6 +15,7 @@ public class GameController : MonoBehaviour
     [Header("UI")]
     [SerializeField] private GameObject gameOverPanel;
     [SerializeField] private GameObject startPanel;
+    [SerializeField] private StartPanelAccusation startPanelAccusation;
 
     [Header("Camera")]
     [SerializeField] private Camera mainCamera;
@@ -29,11 +31,24 @@ public class GameController : MonoBehaviour
 
     private bool isGameOver = false;
 
+    [Header("Judge")]
     [SerializeField] private AudioClip guiltyClip;
     [SerializeField] private AudioClip innocentClip;
     [SerializeField] private AudioSource audioSource;
 
-    [SerializeField] private StartPanelAccusation startPanelAccusation;
+
+    [Header("Music")]
+    [SerializeField] private AudioSource musicAudioSource;
+    [SerializeField] private float musicVolume = .18f;
+    [SerializeField] private AudioClip musicClip;
+
+    [Header("Spinner")]
+    [SerializeField] private AudioSource spinnerAudioSource;
+    [SerializeField] private float spinnerVolume = .18f;
+    [SerializeField] private AudioClip spinnerClip;
+    [SerializeField] private TextMeshProUGUI refutedText;
+    private int highestPlaintiffsRefuted=0;
+
     private void Start()
     {
 
@@ -77,6 +92,7 @@ public class GameController : MonoBehaviour
             }
         }
 
+
         if (isGameOver || player == null || wheelOfJustice == null)
         {
             return;
@@ -87,7 +103,13 @@ public class GameController : MonoBehaviour
         {
             CheckForWin();
         }
+        PlayerMovement playerMovement = FindFirstObjectByType<PlayerMovement>();
 
+        float spinSpeed =
+            playerMovement.GetComponent<Rigidbody2D>().angularVelocity;
+        spinSpeed = Mathf.Abs(spinSpeed);
+        if (spinSpeed < 1080) spinSpeed = 0;
+        spinnerAudioSource.volume = spinnerVolume* (spinSpeed/200);
         float distance = Vector2.Distance(player.position, wheelOfJustice.position);
 
         if (distance > maxDistanceFromWheelCenter + wheelEdgeBuffer)
@@ -125,9 +147,18 @@ public class GameController : MonoBehaviour
         hasWon = true;
         hasStarted = false;
         startPanelAccusation.GameOver();//Stop testimony loop and audio
+        musicAudioSource.Pause();
+        spinnerAudioSource.Pause();
         if (audioSource != null && innocentClip != null)
         {
             audioSource.PlayOneShot(innocentClip);
+        }
+        ParticleSystem[] particles = FindObjectsByType<ParticleSystem>(
+    FindObjectsSortMode.None);
+
+        foreach (ParticleSystem particle in particles)
+        {
+            Destroy(particle.gameObject);
         }
         Time.timeScale = 0f;
         StatusPanelController.Instance.gameObject.SetActive(false);
@@ -137,8 +168,10 @@ public class GameController : MonoBehaviour
             winPanel.transform.SetAsLastSibling();
         }
 
+        
     }
 
+    //Called by the start button on the start panel to start every trial, including the first one
     public void StartFirstTrial()
     {
         Debug.Log("StartFirstTrial clicked");
@@ -154,21 +187,74 @@ public class GameController : MonoBehaviour
         if (winPanel != null)
             winPanel.SetActive(false);
 
+        PlayMusic();
+        StartSpinnerLoop();
 
-
-       
         startPanelAccusation.StartGame();
         if (startPanel != null)
             startPanel.SetActive(false);
-        //UnityEngine.SceneManagement.Scene currentScene =
-        //  UnityEngine.SceneManagement.SceneManager.GetActiveScene();
 
-        //UnityEngine.SceneManagement.SceneManager.LoadScene(currentScene.name);
         SpawnPlayer();
         EnemySpawner.Instance.SpawnEnemies();
+        float maxSpeed = 1 + ((StartPanelAccusation.Instance.GetPlaintiffCount() - 3) / 2f) * 3f;
+        Debug.Log("maxSpeed: " + maxSpeed);
+        GameObject wheelObject = GameObject.FindWithTag("Wheel of Justice");
+
+        if (wheelObject != null)
+        {
+            WheelOfJustice wheel = wheelObject.GetComponent<WheelOfJustice>();
+
+            if (wheel != null)
+            {
+                wheel.ResetRotation();
+
+                float newWheelSpeed = Random.Range(maxSpeed/2, maxSpeed);
+
+                Debug.Log("Setting wheel speed to " + newWheelSpeed);
+
+                wheel.SetRotationSpeed(newWheelSpeed);
+            }
+        }
+
+
+
         StatusPanelController.Instance.gameObject.SetActive(true);
     }
 
+    private void StartSpinnerLoop()
+    {
+        if (spinnerAudioSource == null)
+            return;
+        spinnerAudioSource.clip = spinnerClip;
+        spinnerAudioSource.loop = true;
+        spinnerAudioSource.volume = spinnerVolume;
+        if (spinnerAudioSource.time > 0)
+        {
+            spinnerAudioSource.UnPause();
+        }
+        else
+        {
+            spinnerAudioSource.Play();
+        }
+    }
+    private void PlayMusic()
+    {
+        if (audioSource == null || musicClip == null)
+            return;
+
+        musicAudioSource.clip = musicClip;
+        musicAudioSource.loop = true;
+        Debug.Log("Playing music clip: " + musicClip.name);
+        musicAudioSource.volume = musicVolume;
+        if (musicAudioSource.time > 0)
+        {
+            musicAudioSource.UnPause();
+        }
+        else
+        {
+            musicAudioSource.Play();
+        }
+    }
     private void SpawnPlayer()
     {
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
@@ -219,6 +305,7 @@ public class GameController : MonoBehaviour
         //startPanelAccusation.StartGame();
  
     }
+  
 
     private float GetWheelRadius()
     {
@@ -236,11 +323,35 @@ public class GameController : MonoBehaviour
         startPanelAccusation.GameOver();
         JudgeAudioManager.Instance.SetGameOver(true);
         isGameOver = true;
-
+        spinnerAudioSource.Pause();
+        musicAudioSource.Pause();
         if (audioSource != null && guiltyClip != null)
         {
             audioSource.PlayOneShot(guiltyClip);
         }
+        ParticleSystem[] particles = FindObjectsByType<ParticleSystem>(
+    FindObjectsSortMode.None);
+
+        foreach (ParticleSystem particle in particles)
+        {
+            Destroy(particle.gameObject);
+        }
+        
+        int enemiesRemaining = FindObjectsByType<SimpleAiMovement>(
+            FindObjectsSortMode.None
+        ).Length;
+        int refutedThisTrial = (int)Mathf.Max(0, StartPanelAccusation.Instance.GetPlaintiffCount() -enemiesRemaining);
+        Debug.Log("plantiffs this trial:" + StartPanelAccusation.Instance.GetPlaintiffCount());
+        Debug.Log("plaintiffs refuted this trial: " + refutedThisTrial);
+        highestPlaintiffsRefuted = Mathf.Max(
+            highestPlaintiffsRefuted,
+            refutedThisTrial
+        );
+        highestPlaintiffsRefuted = (int)Mathf.Max(
+            highestPlaintiffsRefuted,
+            StartPanelAccusation.Instance.GetPlaintiffCount()-3
+        );
+        refutedText.text = "Most plantiffs refuted in a trial: " + highestPlaintiffsRefuted.ToString();
         SpawnPlayer();
         gameOverPanel.SetActive(true);
         gameOverPanel.transform.SetAsLastSibling();

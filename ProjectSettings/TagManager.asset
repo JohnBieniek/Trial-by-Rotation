@@ -8,6 +8,7 @@ TagManager:
   - Environment
   - AI
   - UI
+  - Projectile
   layers:
   - Default
   - TransparentFX
