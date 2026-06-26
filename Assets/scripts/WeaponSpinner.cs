@@ -5,6 +5,7 @@ public class WeaponSpinner : MonoBehaviour
 {
     [Header("Spinner")]
     [SerializeField] private RectTransform wheel;
+    [SerializeField] private RectTransform playerWheel;
     [SerializeField] private float minSpinSpeed = 360f;
     [SerializeField] private float maxSpinSpeed = 900f;
     [SerializeField] private float stopDuration = 2f;
@@ -15,14 +16,26 @@ public class WeaponSpinner : MonoBehaviour
     [SerializeField] private GameController gameController;
 
     private float spinSpeed;
+    private float playerSpinSpeed;
     private bool isStopping;
     private bool hasSelected;
     [SerializeField] private float slotOffsetDegrees = 0f;
     private PlayerShotgunShooter shotgunScript;
     private PlayerGunShooter machineGunScript;
     private PlayerBuzzsawShooter buzzsawLauncherScript;
-    [Header("Player")]
+    
+    //[Header("Player Prefabs")]
+    //[SerializeField] private Transform playerModelHolder;
+    //[SerializeField] private GameObject gatlingPlayerPrefab;
+    //[SerializeField] private GameObject shotgunPlayerPrefab;
+    //[SerializeField] private GameObject buzzsawPlayerPrefab;
+
+    [Header("Player Models")]
+    [SerializeField] private GameObject axisModel;
+    [SerializeField] private GameObject maulerModel;
+    [SerializeField] private GameObject tridentModel;
     [SerializeField] private GameObject player;
+    private GameObject currentPlayerModel;
     public static WeaponSpinner Instance { get; private set; }
 
 
@@ -51,6 +64,11 @@ public class WeaponSpinner : MonoBehaviour
 
         if (Random.value < 0.5f)
             spinSpeed *= -1f;
+
+        playerSpinSpeed = Random.Range(minSpinSpeed, maxSpinSpeed);
+
+        if (Random.value < 0.5f)
+            playerSpinSpeed *= -1f;
     }
 
     private void Update()
@@ -61,7 +79,7 @@ public class WeaponSpinner : MonoBehaviour
         if (!isStopping)
         {
             wheel.Rotate(0f, 0f, spinSpeed * Time.unscaledDeltaTime);
-
+            playerWheel.Rotate(0f, 0f, playerSpinSpeed * Time.unscaledDeltaTime);
             if (Input.GetKeyDown(KeyCode.Space))
                 StartCoroutine(StopSpinner());
         }
@@ -78,6 +96,7 @@ public class WeaponSpinner : MonoBehaviour
         isStopping = true;
 
         float startSpeed = spinSpeed;
+        float playerStartSpeed = playerSpinSpeed;
         float elapsed = 0f;
 
         while (elapsed < stopDuration)
@@ -86,19 +105,43 @@ public class WeaponSpinner : MonoBehaviour
 
             float t = elapsed / stopDuration;
             spinSpeed = Mathf.Lerp(startSpeed, 0f, t);
-
+            playerSpinSpeed = Mathf.Lerp(playerStartSpeed, 0f, t);
             wheel.Rotate(0f, 0f, spinSpeed * Time.unscaledDeltaTime);
-
+            playerWheel.Rotate(0f, 0f, playerSpinSpeed * Time.unscaledDeltaTime);
             yield return null;
         }
 
         spinSpeed = 0f;
+        playerSpinSpeed = 0f;
 
         SelectWeapon();
+        SelectModel();
 
         yield return new WaitForSecondsRealtime(startGameDelay);
 
         gameController.StartFirstTrial();
+    }
+    public void EnableRandomModel()
+    {
+        DisableAllModels();
+
+        switch (Random.Range(0, 3))
+        {
+            case 0:
+                ShowModel(axisModel);
+                Debug.Log("Selected Axis");
+                break;
+
+            case 1:
+                ShowModel(maulerModel);
+                Debug.Log("Selected Mauler");
+                break;
+
+            case 2:
+                ShowModel(tridentModel);
+                Debug.Log("Selected Trident");
+                break;
+        }
     }
     public void EnableRandomWeapon()
     {
@@ -121,6 +164,44 @@ public class WeaponSpinner : MonoBehaviour
                 Debug.Log("Selected Buzzsaw Launcher");
                 break;
         }
+    }
+
+    private void SelectModel()
+    {
+        hasSelected = true;
+
+        DisableAllModels();
+
+        int slot = GetSelectedPlayerSlot();
+
+        switch (slot)
+        {
+            case 0:
+            case 3:
+                ShowModel(maulerModel);
+                Debug.Log("Selected Mauler");
+                break;
+
+            case 2:
+            case 5:
+                ShowModel(tridentModel);
+                Debug.Log("Selected trident");
+                break;
+
+            case 1:
+            case 4:
+                ShowModel(axisModel);
+                Debug.Log("Selected axis");
+                break;
+        }
+    }
+    private void ShowModel(GameObject model)
+    {
+        axisModel.SetActive(false);
+        maulerModel.SetActive(false);
+        tridentModel.SetActive(false);
+
+        model.SetActive(true);
     }
     private void SelectWeapon()
     {
@@ -171,10 +252,34 @@ public class WeaponSpinner : MonoBehaviour
 
         return slot;
     }
+
+    private int GetSelectedPlayerSlot()
+    {
+        float z = playerWheel.eulerAngles.z;
+        float slotSize = 360f / 6f;
+
+        float pointerAngle = 90f;
+
+        float correctedAngle =
+            (pointerAngle - z + slotOffsetDegrees + 360f) % 360f;
+
+        int slot = Mathf.FloorToInt(correctedAngle / slotSize);
+
+        Debug.Log("PlayerWheel z: " + z + " corrected: " + correctedAngle + " slot: " + slot);
+
+        return slot;
+    }
     public void DisableAllWeapons()
     {
         if (shotgunScript != null) shotgunScript.enabled = false;
         if (machineGunScript != null) machineGunScript.enabled = false;
         if (buzzsawLauncherScript != null) buzzsawLauncherScript.enabled = false;
+    }
+
+    public void DisableAllModels()
+    {
+        axisModel.SetActive(false);
+        maulerModel.SetActive(false);
+        tridentModel.SetActive(false);
     }
 }

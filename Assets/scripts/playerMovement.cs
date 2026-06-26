@@ -7,7 +7,6 @@ public class PlayerMovement : MonoBehaviour
 {
     private Rigidbody2D rigidBody;
     private Vector2 inputDirection;
-    //public float RotationalSpeed => rigidBody.angularVelocity;
 
     [Header("Movement")]
     [SerializeField] private float thrustForce = 10f;
@@ -29,7 +28,7 @@ public class PlayerMovement : MonoBehaviour
     [Header("Paricles")]
     [SerializeField] private ParticleSystem speedParticles;
     [SerializeField] private float particlesStartRps = 20f;
-    private ParticleSystem.EmissionModule emission;
+    [SerializeField] private GameObject aura;
 
     private void Awake()
     {
@@ -115,6 +114,9 @@ public class PlayerMovement : MonoBehaviour
 
         float rps = Mathf.Abs(rigidBody.angularVelocity) / 360f;
 
+        if(rps>10) aura.SetActive(true);
+        else aura.SetActive(false);
+
         if (rps >= particlesStartRps)
         {
             if (!speedParticles.isPlaying) { 
@@ -195,11 +197,15 @@ public class PlayerMovement : MonoBehaviour
         // Smooth falloff
         spinFactor = spinFactor * spinFactor;
 
-        float knockbackForce =
-     aiSpeed * Mathf.Lerp(1.3f, 0.2f, spinFactor);
-
+        float knockbackForce = aiSpeed * Mathf.Lerp(1.3f, 0.2f, spinFactor);
+        float currentMaxKnockback = maxKnockback;
+        if (playerRps > 10) currentMaxKnockback = 10;
+        if (playerRps > 20) currentMaxKnockback = 5;
+        if (playerRps > 30) currentMaxKnockback = 2;
+        if (playerRps > 40) currentMaxKnockback = 1;
+        if(playerRps > 50) currentMaxKnockback = 0.5f;
         knockbackForce *= knockbackMultiplier;
-        knockbackForce = Mathf.Clamp(knockbackForce, 3f, maxKnockback);
+        knockbackForce = Mathf.Clamp(knockbackForce, .5f, maxKnockback);
 
         rigidBody.AddForce(
             knockbackDirection * knockbackForce,

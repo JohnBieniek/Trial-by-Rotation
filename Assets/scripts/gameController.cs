@@ -20,7 +20,10 @@ public class GameController : MonoBehaviour
     [SerializeField] private GameObject startPanel;
     [SerializeField] private GameObject spinnerPanel;
     [SerializeField] private StartPanelAccusation startPanelAccusation;
-    
+    [SerializeField] private GameObject initialStartButton;
+    [SerializeField] private GameObject startButton;
+    [SerializeField] private GameObject skipButton;
+
     [Header("Camera")]
     [SerializeField] private Camera mainCamera;
     [SerializeField] private float cameraFollowSpeed = 5f;
@@ -52,6 +55,7 @@ public class GameController : MonoBehaviour
     [SerializeField] private AudioSource victoryMusicAudioSource;
     [SerializeField] private AudioClip victoryMusicClip;
     [SerializeField] private float victoryMusicVolume = .18f;
+
     [Header("Spinner")]
     [SerializeField] private AudioSource spinnerAudioSource;
     [SerializeField] private float spinnerVolume = .18f;
@@ -169,11 +173,8 @@ public class GameController : MonoBehaviour
             return;
         }
 
-
-        if (!hasWon)
-        {
-            CheckForWin();
-        }
+        if (!hasWon) CheckForWin();
+        
         PlayerMovement playerMovement = FindFirstObjectByType<PlayerMovement>();
 
         float spinSpeed =
@@ -187,10 +188,7 @@ public class GameController : MonoBehaviour
         {
             //Debug.Log("distance at game over: " + distance);
             GameOver();
-
         }
-
-        
     }
 
     private void CheckForWin()
@@ -270,6 +268,11 @@ public class GameController : MonoBehaviour
 
     public void startSpinnerPanel()
     {
+        //Allow players to skip the spinner panel after they've seen it once
+        initialStartButton.SetActive(false);
+        startButton.SetActive(true);
+        skipButton.SetActive(true);
+
         if (startPanel != null)
             startPanel.SetActive(false);
 
@@ -299,6 +302,7 @@ public class GameController : MonoBehaviour
     public void SkipToTrial()
     {
         WeaponSpinner.Instance.EnableRandomWeapon();
+        WeaponSpinner.Instance.EnableRandomModel();
 
         StartFirstTrial();
     }

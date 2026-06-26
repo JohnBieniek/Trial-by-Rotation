@@ -28,9 +28,7 @@ public class StartPanelAccusation : MonoBehaviour, IPointerDownHandler
         [Range(0f, 1f)]
         public float volume = 1f;
     }
-    
 
-   
     [SerializeField] private TMP_Text accusationText;
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private Accusation[] accusations;
