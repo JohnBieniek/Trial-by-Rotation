@@ -175,7 +175,7 @@ public class StartPanelAccusation : MonoBehaviour, IPointerDownHandler
         Debug.Log("Starting testimony loop with " + remainingTestimonies.Count + " testimonies.");
 
         PlayAccusationAudioOnce();
-        yield return new WaitForSeconds(15.5f);
+        yield return new WaitForSeconds(15.0f);
 
         while (remainingTestimonies.Count > 0)
         {

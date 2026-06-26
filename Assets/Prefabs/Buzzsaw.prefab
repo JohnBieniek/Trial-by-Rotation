@@ -237,7 +237,7 @@ MonoBehaviour:
   detonationParticles: {fileID: 0}
   enemyTag: AI
   stunDuration: 1.5
-  knockbackAmount: 53.6
+  knockbackAmount: 58.1
   buzzsawAudio: {fileID: 4227945062051983405}
   buzzsawLoop: {fileID: 0}
   speed: 23.3

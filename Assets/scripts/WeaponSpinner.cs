@@ -8,7 +8,7 @@ public class WeaponSpinner : MonoBehaviour
     [SerializeField] private float minSpinSpeed = 360f;
     [SerializeField] private float maxSpinSpeed = 900f;
     [SerializeField] private float stopDuration = 2f;
-    [SerializeField] private float startGameDelay = 5f;
+    [SerializeField] private float startGameDelay = 2.5f;
 
 
     [Header("Game")]
@@ -23,8 +23,12 @@ public class WeaponSpinner : MonoBehaviour
     private PlayerBuzzsawShooter buzzsawLauncherScript;
     [Header("Player")]
     [SerializeField] private GameObject player;
+    public static WeaponSpinner Instance { get; private set; }
+
+
     private void Awake()
     {
+        Instance = this;
         shotgunScript = player.GetComponent<PlayerShotgunShooter>();
         machineGunScript = player.GetComponent<PlayerGunShooter>();
         buzzsawLauncherScript = player.GetComponent<PlayerBuzzsawShooter>();
@@ -96,7 +100,28 @@ public class WeaponSpinner : MonoBehaviour
 
         gameController.StartFirstTrial();
     }
+    public void EnableRandomWeapon()
+    {
+        DisableAllWeapons();
 
+        switch (Random.Range(0, 3))
+        {
+            case 0:
+                shotgunScript.enabled = true;
+                Debug.Log("Selected Blaster");
+                break;
+
+            case 1:
+                machineGunScript.enabled = true;
+                Debug.Log("Selected Gatling Gun");
+                break;
+
+            case 2:
+                buzzsawLauncherScript.enabled = true;
+                Debug.Log("Selected Buzzsaw Launcher");
+                break;
+        }
+    }
     private void SelectWeapon()
     {
         hasSelected = true;
@@ -146,7 +171,7 @@ public class WeaponSpinner : MonoBehaviour
 
         return slot;
     }
-    private void DisableAllWeapons()
+    public void DisableAllWeapons()
     {
         if (shotgunScript != null) shotgunScript.enabled = false;
         if (machineGunScript != null) machineGunScript.enabled = false;

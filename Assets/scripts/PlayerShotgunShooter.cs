@@ -15,7 +15,7 @@ public class PlayerShotgunShooter : MonoBehaviour
 
     private void Update()
     {
-        if (!GameController.hasStarted || GameController.Instance.IsGameWonOrLost())
+        if (!GameController.hasStarted || GameController.Instance.IsGameWonOrLost() ||  GameController.Instance.IsMenuOpen())
             return;
 
         if (Input.GetMouseButton(0) && Time.time >= nextShotTime)

@@ -5,31 +5,31 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerMovement : MonoBehaviour
 {
+    private Rigidbody2D rigidBody;
+    private Vector2 inputDirection;
+    //public float RotationalSpeed => rigidBody.angularVelocity;
 
     [Header("Movement")]
     [SerializeField] private float thrustForce = 10f;
     [SerializeField] private float maxSpeed = 8f;
+    [SerializeField]private float rotationSpeed = -90f; // degrees per second
+    [SerializeField] private float spinAcceleration = 1500f;
+    [SerializeField] private float maxRotationalSpeed = 10800f;
+    [SerializeField] private float verticalForceMultiplier = 1.5f;
 
     [Header("Friction")]
     [SerializeField] private float frictionModifier = 2f;
-
-    private Rigidbody2D rigidBody;
-    private Vector2 inputDirection;
-    public float RotationalSpeed => rigidBody.angularVelocity;
 
     [Header("Knockback")]
     [SerializeField] private float knockbackMultiplier = 2f;
     [SerializeField] private float spinKnockbackMultiplier = 0.002f;
     [SerializeField] private float maxKnockback = 40f;
+    
 
-    [SerializeField]
-    private float rotationSpeed = -90f; // degrees per second
-    [SerializeField] private float spinAcceleration = 1500f;
-    [SerializeField] private float maxRotationalSpeed = 10800f;
-
-    [SerializeField] private float verticalForceMultiplier = 1.5f;
-
-
+    [Header("Paricles")]
+    [SerializeField] private ParticleSystem speedParticles;
+    [SerializeField] private float particlesStartRps = 20f;
+    private ParticleSystem.EmissionModule emission;
 
     private void Awake()
     {
@@ -37,6 +37,13 @@ public class PlayerMovement : MonoBehaviour
 
         rigidBody.gravityScale = 0f;
         rigidBody.freezeRotation = false;
+
+        speedParticles = GetComponentInChildren<ParticleSystem>(true);
+
+        if (speedParticles == null)
+            Debug.LogError("No speed particle system found on " + gameObject.name);
+        else
+            Debug.Log("Found speed particles: " + speedParticles.name);
     }
 
     private void Start()
@@ -51,13 +58,14 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        if (!GameController.hasStarted)
+        if (!GameController.hasStarted)//Stop the player when the game is not started
         {
             rigidBody.linearVelocity = Vector2.zero;
             rigidBody.angularVelocity = 0f;
             return;
         }
-        if (Keyboard.current.spaceKey.isPressed || Input.GetMouseButton(1))
+
+        if (Keyboard.current.spaceKey.isPressed || Input.GetMouseButton(1))//Spin the player when the space key or right mouse button is pressed
         {
             float acceleration = spinAcceleration;
 
@@ -96,8 +104,31 @@ public class PlayerMovement : MonoBehaviour
             inputDirection.y += 1f;
 
         inputDirection = inputDirection.normalized;
-    }
 
+        UpdateSpeedParticles();
+
+    }
+    private void UpdateSpeedParticles()
+    {
+        if (speedParticles == null)
+            speedParticles = GetComponentInChildren<ParticleSystem>(true);
+
+        float rps = Mathf.Abs(rigidBody.angularVelocity) / 360f;
+
+        if (rps >= particlesStartRps)
+        {
+            if (!speedParticles.isPlaying) { 
+                speedParticles.Play(true);
+                var main = speedParticles.main;
+                main.startLifetime = rps/30;
+            }
+        }
+        else
+        {
+            if (speedParticles.isPlaying)
+                speedParticles.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+        }
+    }
     private void FixedUpdate()
     {
         ApplyMovementForce();
@@ -159,7 +190,7 @@ public class PlayerMovement : MonoBehaviour
         float playerRps = Mathf.Abs(rigidBody.angularVelocity) / 360f;
 
         // 0 at 0 RPS, 1 at 25 RPS
-        float spinFactor = Mathf.Clamp01(playerRps / 25f);
+        float spinFactor = Mathf.Clamp01(playerRps / 10f);
 
         // Smooth falloff
         spinFactor = spinFactor * spinFactor;

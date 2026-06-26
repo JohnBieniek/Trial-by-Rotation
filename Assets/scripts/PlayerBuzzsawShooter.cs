@@ -5,17 +5,23 @@ public class PlayerBuzzsawShooter : MonoBehaviour
     [Header("Buzzsaw")]
     [SerializeField] private BuzzsawProjectile buzzsawPrefab;
     [SerializeField] private Transform firePoint;
-    private float nextShotTime;
     [SerializeField] private float secondsBetweenShots;
+
+    private float nextShotTime;
+
+    [Header("Audio")]
+    [SerializeField] private AudioClip gunSound;
+    [SerializeField] private AudioSource gunSource;
+
     private void Update()
     {
-        if (!GameController.hasStarted || GameController.Instance.IsGameWonOrLost())
+        if (!GameController.hasStarted || GameController.Instance.IsGameWonOrLost() || GameController.Instance.IsMenuOpen())
             return;
 
 
         if (Input.GetMouseButton(0) && Time.time >= nextShotTime)
         {
-            Debug.Log($"Shot from {gameObject.name} at {Time.time}");
+            //Debug.Log($"Shot from {gameObject.name} at {Time.time}");
             ShootBuzzsaw();
             nextShotTime = Time.time + secondsBetweenShots;
         }
@@ -24,6 +30,8 @@ public class PlayerBuzzsawShooter : MonoBehaviour
     {
         if (buzzsawPrefab == null) return;
 
+        gunSource.PlayOneShot(gunSound, 0.4f);
+
         Vector3 mouseWorld =
             Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
@@ -31,9 +39,8 @@ public class PlayerBuzzsawShooter : MonoBehaviour
 
         Vector2 direction =
             (mouseWorld - transform.position).normalized;
-        //CircleCollider2D circle = GetComponent<CircleCollider2D>();
 
-        float spinnerRadius = 1.5f; // adjust to your wheel size
+        float spinnerRadius = 1.5f; // adjust to spinner size
 
         Vector3 spawnPosition =
             transform.position + (Vector3)(direction * spinnerRadius);
@@ -43,8 +50,6 @@ public class PlayerBuzzsawShooter : MonoBehaviour
            spawnPosition,
             Quaternion.identity
         );
-
-
 
         saw.Launch(
             direction

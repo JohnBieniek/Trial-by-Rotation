@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -227,14 +228,18 @@ public class GameController : MonoBehaviour
         }
         PlayVictoryMusic();
         ParticleSystem[] particles = FindObjectsByType<ParticleSystem>(
-    FindObjectsSortMode.None);
+     FindObjectsSortMode.None);
 
         foreach (ParticleSystem particle in particles)
         {
+            if (particle.transform.IsChildOf(player) || particle.transform.tag == "Environment")
+                continue;
+
             Destroy(particle.gameObject);
         }
         Time.timeScale = 0f;
         StatusPanelController.Instance.gameObject.SetActive(false);
+        DestroyProjectiles();
         if (winPanel != null)
         {
             winPanel.SetActive(true);
@@ -283,6 +288,19 @@ public class GameController : MonoBehaviour
             if (spinner != null)
                 spinner.ResetSpinner();
         }
+    }
+    private void DestroyProjectiles()
+    {
+        foreach (GameObject projectile in GameObject.FindGameObjectsWithTag("Projectile"))
+        {
+            Destroy(projectile);
+        }
+    }
+    public void SkipToTrial()
+    {
+        WeaponSpinner.Instance.EnableRandomWeapon();
+
+        StartFirstTrial();
     }
     //Called by the start button on the start panel to start every trial, including the first one
     public void StartFirstTrial()
@@ -412,7 +430,7 @@ public class GameController : MonoBehaviour
     private void SpawnPlayer()
     {
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
-
+        Transform wheelCenter = GameObject.FindWithTag("Wheel of Justice").transform;
         if (playerObj == null || wheelOfJustice == null)
             return;
 
@@ -424,7 +442,13 @@ public class GameController : MonoBehaviour
         ) * 4f;
 
         playerObj.transform.position =
-            wheelOfJustice.position + (Vector3)offset;
+            wheelOfJustice.position + (Vector3)(offset);
+
+
+        //Vector2 direction = (wheelCenter.position).normalized;
+
+        //Vector3 spawnPosition =
+        //    wheelCenter.position + (Vector3)(direction * 2.8f);
 
         Rigidbody2D rb = playerObj.GetComponent<Rigidbody2D>();
 
@@ -461,8 +485,12 @@ public class GameController : MonoBehaviour
         //startPanelAccusation.StartGame();
  
     }
-  
 
+    public bool IsMenuOpen()
+    {
+        return (startPanel != null && startPanel.activeInHierarchy)
+            || (spinnerPanel != null && spinnerPanel.activeInHierarchy);
+    }
     private float GetWheelRadius()
     {
         SpriteRenderer spriteRenderer = wheelOfJustice.GetComponent<SpriteRenderer>();
@@ -485,14 +513,18 @@ public class GameController : MonoBehaviour
         {
             audioSource.PlayOneShot(guiltyClip);
         }
-        ParticleSystem[] particles = FindObjectsByType<ParticleSystem>(
-    FindObjectsSortMode.None);
         PlayGameOverMusic();
+        ParticleSystem[] particles = FindObjectsByType<ParticleSystem>(
+     FindObjectsSortMode.None);
+
         foreach (ParticleSystem particle in particles)
         {
+            if (particle.transform.IsChildOf(player) || particle.transform.tag=="Environment")
+                continue;
+
             Destroy(particle.gameObject);
         }
-        
+        DestroyProjectiles();
         int enemiesRemaining = FindObjectsByType<SimpleAiMovement>(
             FindObjectsSortMode.None
         ).Length;
