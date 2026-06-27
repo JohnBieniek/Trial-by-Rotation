@@ -42550,6 +42550,11 @@ MonoBehaviour:
   defensiveInstructions: {fileID: 1590220827}
   defensiveInstructionDelay: 25
   defensiveInstructionDisplayTime: 5
+  spin: {fileID: 828167970}
+  spinInstructionDelay: 5
+  spinInstructionCameraLockTime: 3
+  spinInstructionReturnTime: 2
+  spinInstructionPlayerYOffset: -80
 --- !u!4 &1836498381
 Transform:
   m_ObjectHideFlags: 0
