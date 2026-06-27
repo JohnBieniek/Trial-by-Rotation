@@ -35,7 +35,7 @@ public class StartPanelAccusation : MonoBehaviour, IPointerDownHandler
     [SerializeField] private float testimonyVolume = 2f;
  
     [SerializeField] private float startingPlantiffCount = 3;
-    public float startingPlantiffCountThisTrial = 3;
+    public float startingPlantiffCountThisTrial = 21;
     private float plantiffCount = 0;
     private readonly List<int> remainingAccusations = new();
     private List<Testimony> remainingTestimonies;

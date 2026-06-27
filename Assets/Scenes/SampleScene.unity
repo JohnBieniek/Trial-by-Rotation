@@ -11958,11 +11958,11 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_text: "You have been summoned for Trial by Rotation. \nPlease approach the bench!
-    \n\nYou must prove your innocence by removing your accusers from the Wheel of
-    Justice by any means neccessary. \n\nThe faster you spin, the more stable you
-    become. Speed up to make it harder to push you and to send your accusers flying
-    farther! Accelerate by holding Space!\n\nUse the Arrow keys to move. Left click
-    to fire your weapon! Right click to use your defensive ability!\n\nNaturally,
+    \n\nYou must prove your innocence by removing your accusers Spinning Red Battle
+    Tops from the Wheel of Justice by any means neccessary. \n\nThe faster you spin,
+    the more stable you become. Speed up to make it harder to push you and to send
+    your accusers flying farther! Accelerate by holding Space!\n\nUse the Arrow keys
+    to move. Left click to fire your weapon! Right click to use your defensive ability!\n\nNaturally,
     if you are found guilty you will be rotated to the fullest extent of the law!"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
