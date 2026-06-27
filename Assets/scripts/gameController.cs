@@ -96,14 +96,113 @@ public class GameController : MonoBehaviour
     [SerializeField] private float defensiveInstructionDelay = 25f;
     [SerializeField] private float defensiveInstructionDisplayTime = 5f;
 
+
+    [SerializeField] private GameObject spin; // existing bottom-screen "hold space" instruction
+
+    [Header("Spin Instruction Reminder")]
+    [SerializeField] private float spinInstructionDelay = 5f;
+    [SerializeField] private float spinInstructionCameraLockTime = 3f;
+    [SerializeField] private float spinInstructionReturnTime = 2f;
+    [SerializeField] private float spinInstructionPlayerYOffset = -80f;
+
+    private bool playerUsedSpinOnce = false;
+    private float timeSinceSpinUse = 0f;
+    private bool spinInstructionShown = false;
+    private bool spinInstructionMoving = false;
+
+    private RectTransform spinRect;
+    private Canvas spinCanvas;
+    private Vector2 spinOriginalPosition;
+    private bool spinOriginalPositionSaved = false;
+    private bool spinOriginalActiveState = true;
+    private Coroutine spinInstructionRoutine;
+
+    private float cameraLockedUntil = -1f;
+    private Vector3 lockedCameraPosition;
+
     void Awake()
     {
         Instance = this;
         if (firingInstructions != null) firingInstructions.SetActive(false);
         playerMovement = FindFirstObjectByType<PlayerMovement>();
         PlayMenuMusic();
+        SetupSpinInstruction();
         if (defensiveInstructions != null)
             defensiveInstructions.SetActive(false);
+    }
+
+    private void SetupSpinInstruction()
+    {
+        if (spin == null)
+            return;
+
+        spinRect = spin.GetComponent<RectTransform>();
+        spinCanvas = spin.GetComponentInParent<Canvas>();
+
+        if (spinRect != null)
+        {
+            spinOriginalPosition = spinRect.anchoredPosition;
+            spinOriginalPositionSaved = true;
+        }
+
+        spinOriginalActiveState = spin.activeSelf;
+    }
+
+    private void MoveSpinToDefensiveInstructionPosition()
+    {
+        if (spin == null || spinRect == null || defensiveInstructions == null)
+            return;
+
+        RectTransform defensiveRect = defensiveInstructions.GetComponent<RectTransform>();
+
+        if (defensiveRect == null)
+            return;
+
+        // Use world UI position, not anchoredPosition.
+        // This works even if anchors/pivots are different.
+        spinRect.position = defensiveRect.position;
+    }
+    private System.Collections.IEnumerator MoveSpinInstructionNearPlayer()
+    {
+        if (spin == null || spinRect == null)
+            yield break;
+
+        spinInstructionMoving = true;
+        spinInstructionShown = true;
+
+        spinOriginalActiveState = spin.activeSelf;
+        spin.SetActive(true);
+
+        MoveSpinToDefensiveInstructionPosition();
+
+        yield return new WaitForSeconds(spinInstructionCameraLockTime);
+
+        Vector2 startPosition = spinRect.anchoredPosition;
+        Vector2 endPosition = spinOriginalPosition;
+
+        float elapsed = 0f;
+
+        while (elapsed < spinInstructionReturnTime)
+        {
+            elapsed += Time.deltaTime;
+
+            float t = elapsed / spinInstructionReturnTime;
+            t = Mathf.SmoothStep(0f, 1f, t);
+
+            spinRect.anchoredPosition = Vector2.Lerp(
+                startPosition,
+                endPosition,
+                t
+            );
+
+            yield return null;
+        }
+
+        spinRect.anchoredPosition = endPosition;
+        spin.SetActive(spinOriginalActiveState);
+
+        spinInstructionMoving = false;
+        spinInstructionRoutine = null;
     }
     public void LoadRandomLayout()
     {
@@ -232,6 +331,23 @@ public class GameController : MonoBehaviour
             {
                 firingInstructions.SetActive(false);
                 firingInstructionsVisible = false;
+            }
+        }
+        if (firstTrialStarted && !spinInstructionShown)
+        {
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                playerUsedSpinOnce = true;
+                timeSinceSpinUse = 0f;
+            }
+            else if (!playerUsedSpinOnce)
+            {
+                timeSinceSpinUse += Time.deltaTime;
+            }
+
+            if (!playerUsedSpinOnce && timeSinceSpinUse >= spinInstructionDelay)
+            {
+                spinInstructionRoutine = StartCoroutine(MoveSpinInstructionNearPlayer());
             }
         }
 
@@ -720,7 +836,7 @@ public class GameController : MonoBehaviour
         }
         Vector3 targetPosition = player.position + cameraOffset;
         float followSpeed = cameraFollowSpeed;
-        if (firstGameTimer <= 5f || firingInstructionsVisible || defensiveInstructionsVisible) {
+        if (firstGameTimer <= 5f || firingInstructionsVisible || defensiveInstructionsVisible || spinInstructionMoving) {
             followSpeed = 15f; // or 20-30 if you want it faster
         }
       
