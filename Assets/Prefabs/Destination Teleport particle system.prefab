@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2942864471596155243}
   - component: {fileID: 6591265937235135650}
   - component: {fileID: 4067801776905138773}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Destination Teleport particle system
   m_TagString: Untagged
   m_Icon: {fileID: 0}

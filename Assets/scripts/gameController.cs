@@ -120,6 +120,11 @@ public class GameController : MonoBehaviour
     private float cameraLockedUntil = -1f;
     private Vector3 lockedCameraPosition;
 
+    [SerializeField] private GameObject pausePanel;
+
+    private bool isPaused = false;
+    private float timeScaleBeforePause = 1f;
+
     void Awake()
     {
         Instance = this;
@@ -129,6 +134,8 @@ public class GameController : MonoBehaviour
         SetupSpinInstruction();
         if (defensiveInstructions != null)
             defensiveInstructions.SetActive(false);
+        if (pausePanel != null)
+            pausePanel.SetActive(false);
     }
 
     private void SetupSpinInstruction()
@@ -287,9 +294,63 @@ public class GameController : MonoBehaviour
 
         defensiveInstructionsVisible = false;
     }
+    public void TogglePause()
+    {
+        if (isGameOver || hasWon || !hasStarted)
+            return;
+
+        if (pausePanel == null)
+            return;
+
+        if (isPaused)
+        {
+            ResumeGame();
+        }
+        else
+        {
+            PauseGame();
+        }
+    }
+    private void PauseGame()
+    {
+        isPaused = true;
+
+        timeScaleBeforePause = Time.timeScale;
+        Time.timeScale = 0f;
+
+        pausePanel.SetActive(true);
+        pausePanel.transform.SetAsLastSibling();
+
+        if (musicAudioSource != null)
+            musicAudioSource.Pause();
+
+        if (spinnerAudioSource != null)
+            spinnerAudioSource.Pause();
+    }
+
+    public void ResumeGame()
+    {
+        isPaused = false;
+
+        Time.timeScale = timeScaleBeforePause <= 0f ? 1f : timeScaleBeforePause;
+
+        if (pausePanel != null)
+            pausePanel.SetActive(false);
+
+        if (musicAudioSource != null)
+            musicAudioSource.UnPause();
+
+        if (spinnerAudioSource != null && hasStarted && !hasWon && !isGameOver)
+            spinnerAudioSource.UnPause();
+    }
 
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.P))
+        {
+            TogglePause();
+        }
+        if (isPaused) { return; }
         //Movement instructions shown on your first playthrough
         if (firstTrialStarted && !initialInstructionsHidden)
         {

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4455661374704131747}
   - component: {fileID: 2698602155998773628}
   - component: {fileID: 7111097641629377872}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Starting Teleport particle system
   m_TagString: Untagged
   m_Icon: {fileID: 0}
