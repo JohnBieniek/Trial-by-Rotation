@@ -193,8 +193,8 @@ public class PlayerMovement : MonoBehaviour
                 rigidBody.angularVelocity = currentSpin;
             }
         }
-
-        if(teleporterActive && Time.time >= nextTeleportTime)
+        ClampRotationSpeed();
+        if (teleporterActive && Time.time >= nextTeleportTime)
         {
             teleportIcon.SetActive(true);
 
@@ -646,6 +646,15 @@ public class PlayerMovement : MonoBehaviour
             stuckCollider = null;
         }
     }
+
+    private void ClampRotationSpeed()
+{
+    rigidBody.angularVelocity = Mathf.Clamp(
+        rigidBody.angularVelocity,
+        -maxRotationalSpeed,
+        maxRotationalSpeed
+    );
+}
 
     private void OnCollisionExit2D(Collision2D collision)
     {

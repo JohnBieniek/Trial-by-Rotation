@@ -82,7 +82,7 @@ public class GameController : MonoBehaviour
     private int plaintiffsRefutedThisTrial;
     private readonly Dictionary<Transform, Transform> originalParents = new();
     private PlayerMovement playerMovement;
-    [SerializeField] private float winCheckInterval = 0.75f;
+    [SerializeField] private float winCheckInterval = 0.5f;
     private float nextWinCheckTime;
     public static GameController Instance { get; private set; }
 
@@ -220,6 +220,7 @@ public class GameController : MonoBehaviour
                 firingInstructions.SetActive(true);
                 firingInstructionsVisible = true;
                 firingInstructionsShown = true;
+                defensiveInstructionDelay -= 7;
                 firingInstructionsVisibleTimer = 0f;
             }
         }
@@ -283,11 +284,12 @@ public class GameController : MonoBehaviour
             return;
         }
 
-        if (hasStarted && !hasWon && !isGameOver && Time.time >= nextWinCheckTime)
+        if (hasStarted && !hasWon && !isGameOver)
         {
-            nextWinCheckTime = Time.time + winCheckInterval;
-            CheckForWin();
-
+            if(Time.time >= nextWinCheckTime){ 
+                nextWinCheckTime = Time.time + winCheckInterval;
+                CheckForWin();
+            }
             float distance = Vector2.Distance(player.position, wheelOfJustice.position);
 
             if (distance > maxDistanceFromWheelCenter + wheelEdgeBuffer)
@@ -718,7 +720,7 @@ public class GameController : MonoBehaviour
         }
         Vector3 targetPosition = player.position + cameraOffset;
         float followSpeed = cameraFollowSpeed;
-        if (firstGameTimer <= 5f || firingInstructionsVisible) {
+        if (firstGameTimer <= 5f || firingInstructionsVisible || defensiveInstructionsVisible) {
             followSpeed = 15f; // or 20-30 if you want it faster
         }
       

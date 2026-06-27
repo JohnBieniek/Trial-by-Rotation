@@ -123,7 +123,7 @@ public class StartPanelAccusation : MonoBehaviour, IPointerDownHandler
         accusationAudioPlayed = true;
 
         audioSource.Stop();
-        audioSource.PlayOneShot(currentAccusation.audioClip, 0.8f);
+        audioSource.PlayOneShot(currentAccusation.audioClip, 0.73f);
 
         //Debug.Log("Playing accusation: " + currentAccusation.audioClip.name);
     }
