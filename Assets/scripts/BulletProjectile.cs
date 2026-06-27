@@ -52,7 +52,7 @@ public class BulletProjectile : MonoBehaviour
 
         Physics2D.IgnoreCollision(bulletCollider, playerCollider);
     
-        Destroy(gameObject, 5f);//Don't let the object persist if it misses
+        Destroy(gameObject, 2.5f);//Don't let the object persist if it misses
     }
 
     private void Update()

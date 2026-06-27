@@ -16,19 +16,20 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float spinAcceleration = 1500f;
     [SerializeField] private float maxRotationalSpeed = 10800f;
     [SerializeField] private float verticalForceMultiplier = 1.5f;
-
+    [SerializeField] private AudioSource defenseAudioSource;
     [Header("Teleport")]
     [SerializeField] public bool teleporterActive = false;
     [SerializeField] private float teleportCooldown = 5f;
     [SerializeField] private GameObject teleportIcon;
     [SerializeField] private ParticleSystem teleportStartParticles;
     [SerializeField] private ParticleSystem teleportEndParticles;
+    [SerializeField] public AudioClip teleportAudioClip;
     private float nextTeleportTime = 0f;
     [SerializeField] private float teleportIconRadius = 1.5f;
     [SerializeField] private float teleportIconRotationSpeed = 45f; // degrees per second
     private float teleportIconAngle;
     [SerializeField] private float teleportParticleDestroyDelay = 2f;
-
+    [SerializeField] private float defenseAudioVolume = .9f; 
     [Header("Repulse Ability")]
     [SerializeField] public bool repulsorActive = false;
     [SerializeField] private GameObject repulsorIcon;
@@ -43,6 +44,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float repulsorBlastScaleMultiplier = 5f;
     private float repulsorIconAngle;
     [SerializeField] private float blastGrowTime = 0.05f;
+    [SerializeField] public AudioClip repulsorAudioClip;
     private Coroutine blastRoutine;
     private float nextRepulseTime = 0f;
 
@@ -59,6 +61,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float slowTimeIconOrbitSpeed = 45f;
     [SerializeField] private Transform slowTimeMinuteHand;
     [SerializeField] private float slowTimeMinuteHandSpeed = 12f;
+    [SerializeField] public AudioClip chronoStartAudioClip;
+    [SerializeField] public AudioClip chronoEndAudioClip;
 
     private float nextSlowTimeUseTime = 0f;
     private float slowTimeEndTime = 0f;
@@ -125,6 +129,14 @@ public class PlayerMovement : MonoBehaviour
         {
             transform.SetParent(wheel.transform, true);
         }
+    }
+
+    private void PlayDefenseAudio(AudioClip clip)
+    {
+        if (defenseAudioSource == null || clip == null)
+            return;
+
+        defenseAudioSource.PlayOneShot(clip, defenseAudioVolume);
     }
 
     private IEnumerator PlayRepulsorBlast()
@@ -236,40 +248,47 @@ public class PlayerMovement : MonoBehaviour
 
     private void HandleSlowTimeAbility()
     {
-        if (!chronoshiftActive || chronoshifting)
+        if (!chronoshiftActive)
         {
-            slowTimeIcon.SetActive(false);
+            if (slowTimeIcon != null)
+                slowTimeIcon.SetActive(false);
+
+            return;
+        }
+
+        if (chronoshifting)
+        {
+            if (slowTimeIcon != null)
+                slowTimeIcon.SetActive(false);
+
+            if (Time.unscaledTime >= slowTimeEndTime)
+                EndSlowTime();
+
             return;
         }
 
         bool cooldownReady = Time.unscaledTime >= nextSlowTimeUseTime;
 
-        if (chronoshifting && Time.unscaledTime >= slowTimeEndTime)
+        if (slowTimeIcon != null)
         {
-            EndSlowTime();
-        }
+            slowTimeIcon.SetActive(cooldownReady);
 
-        bool shouldShowIcon = chronoshifting || cooldownReady;
-
-        slowTimeIcon.SetActive(shouldShowIcon);
-
-        if (shouldShowIcon)
-        {
-            OrbitSlowTimeIcon();
-
-            if (slowTimeMinuteHand != null)
+            if (cooldownReady)
             {
-                slowTimeMinuteHand.Rotate(
-                    0f,
-                    0f,
-                    -slowTimeMinuteHandSpeed * Time.unscaledDeltaTime
-                );
+                OrbitSlowTimeIcon();
+
+                if (slowTimeMinuteHand != null)
+                {
+                    slowTimeMinuteHand.Rotate(
+                        0f,
+                        0f,
+                        -slowTimeMinuteHandSpeed * Time.unscaledDeltaTime
+                    );
+                }
             }
         }
 
-        if (!chronoshifting &&
-            cooldownReady &&
-            Input.GetMouseButtonDown(1))
+        if (cooldownReady && Input.GetMouseButtonDown(1))
         {
             StartSlowTime();
         }
@@ -278,6 +297,7 @@ public class PlayerMovement : MonoBehaviour
     private void StartSlowTime()
     {
         chronoshifting = true;
+
         slowTimeIcon.SetActive(false);
         if (musicSource != null)
             musicSource.pitch = chronoshiftMusicPitch;
@@ -292,6 +312,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void EndSlowTime()
     {
+        PlayDefenseAudio(chronoEndAudioClip);
         chronoshifting = false;
         if (musicSource != null)
             musicSource.pitch = normalMusicPitch;
@@ -368,7 +389,7 @@ public class PlayerMovement : MonoBehaviour
             repulsorRadius,
             enemyLayer
         );
-
+        PlayDefenseAudio(repulsorAudioClip);
         foreach (Collider2D hit in hits)
         {
             Rigidbody2D enemyRb = hit.attachedRigidbody;
@@ -391,14 +412,14 @@ public class PlayerMovement : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, repulsorRadius);
     }
-    [SerializeField] private int teleportParticleBurstCount = 100;
+    [SerializeField] private int teleportParticleBurstCount = 30;
     [SerializeField] private int teleportParticleSortingOrder = 1000;
     //[SerializeField] private float teleportParticleDestroyDelay = 2f;
 
     private void TeleportToCursor()
     {
         Vector3 start = transform.position;
-
+        PlayDefenseAudio(teleportAudioClip);
         Vector3 mouse = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         mouse.z = transform.position.z;
 

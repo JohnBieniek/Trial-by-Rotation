@@ -51,7 +51,7 @@ public class BuzzsawProjectile : MonoBehaviour
             .GetComponent<Collider2D>();
         if (playerCollider != null && sawCollider!=null) Physics2D.IgnoreCollision(sawCollider, playerCollider);
 
-        Destroy(gameObject, 10f);
+        Destroy(gameObject, 6f);
     }
 
     private void Update()

@@ -81,13 +81,14 @@ public class GameController : MonoBehaviour
 
     private int plaintiffsRefutedThisTrial;
     private readonly Dictionary<Transform, Transform> originalParents = new();
-
+    private PlayerMovement playerMovement;
     public static GameController Instance { get; private set; }
 
     void Awake()
     {
         Instance = this;
         if (firingInstructions != null) firingInstructions.SetActive(false);
+        playerMovement = FindFirstObjectByType<PlayerMovement>();
         PlayMenuMusic();
     }
     public void LoadRandomLayout()
@@ -234,10 +235,7 @@ public class GameController : MonoBehaviour
 
         if (!hasWon) CheckForWin();
         
-        PlayerMovement playerMovement = FindFirstObjectByType<PlayerMovement>();
-
-        float spinSpeed =
-            playerMovement.GetComponent<Rigidbody2D>().angularVelocity;
+        float spinSpeed = playerMovement.GetComponent<Rigidbody2D>().angularVelocity;
         spinSpeed = Mathf.Abs(spinSpeed);
         if (spinSpeed < 1080) spinSpeed = 0;
         spinnerAudioSource.volume = spinnerVolume* (spinSpeed/200);
