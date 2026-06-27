@@ -1,5 +1,6 @@
+using System;
+using System.Collections;
 using UnityEngine;
-using UnityEngine.Audio;
 using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(Rigidbody2D))]
@@ -16,6 +17,59 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float maxRotationalSpeed = 10800f;
     [SerializeField] private float verticalForceMultiplier = 1.5f;
 
+    [Header("Teleport")]
+    [SerializeField] public bool teleporterActive = false;
+    [SerializeField] private float teleportCooldown = 5f;
+    [SerializeField] private GameObject teleportIcon;
+    [SerializeField] private ParticleSystem teleportStartParticles;
+    [SerializeField] private ParticleSystem teleportEndParticles;
+    private float nextTeleportTime = 0f;
+    [SerializeField] private float teleportIconRadius = 1.5f;
+    [SerializeField] private float teleportIconRotationSpeed = 45f; // degrees per second
+    private float teleportIconAngle;
+    [SerializeField] private float teleportParticleDestroyDelay = 2f;
+
+    [Header("Repulse Ability")]
+    [SerializeField] public bool repulsorActive = false;
+    [SerializeField] private GameObject repulsorIcon;
+    [SerializeField] private GameObject repulsorBlast;
+    [SerializeField] private float repulsorCooldown = 5f;
+    [SerializeField] private float repulsorRadius = 5f;
+    [SerializeField] private float repulsorForce = 25f;
+    [SerializeField] private float repulsorStunDuration = 0.35f;
+    [SerializeField] private LayerMask enemyLayer;
+    [SerializeField] private float repulsorIconRadius = 1.5f;
+    [SerializeField] private float repulsorIconRotationSpeed = 45f; // degrees per second
+    [SerializeField] private float repulsorBlastScaleMultiplier = 5f;
+    private float repulsorIconAngle;
+    [SerializeField] private float blastGrowTime = 0.05f;
+    private Coroutine blastRoutine;
+    private float nextRepulseTime = 0f;
+
+    [Header("Slow Time Ability")]
+    [SerializeField] private Boolean chronoshiftActive = false;
+    private bool chronoshifting = false;
+    [SerializeField] private GameObject slowTimeIcon;
+    [SerializeField] private float slowTimeCooldown = 10f;
+    [SerializeField] private float slowTimeDuration = 3f;
+    [SerializeField] private float slowTimeScale = 0.5f;
+    [SerializeField] private KeyCode slowTimeKey = KeyCode.Q;
+
+    [SerializeField] private float slowTimeIconRadius = 1.75f;
+    [SerializeField] private float slowTimeIconOrbitSpeed = 45f;
+    [SerializeField] private Transform slowTimeMinuteHand;
+    [SerializeField] private float slowTimeMinuteHandSpeed = 12f;
+
+    private float nextSlowTimeUseTime = 0f;
+    private float slowTimeEndTime = 0f;
+    private float slowTimeIconAngle = 0f;
+    public static float PlayerTimeCompensation { get; private set; } = 1f;
+    [Header("Audio")]
+    [SerializeField] private AudioSource musicSource;
+    [SerializeField] private float chronoshiftMusicPitch = 0.5f;
+
+    private float normalMusicPitch = 1f;
+
     [Header("Friction")]
     [SerializeField] private float frictionModifier = 2f;
 
@@ -23,12 +77,18 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float knockbackMultiplier = 2f;
     [SerializeField] private float spinKnockbackMultiplier = 0.002f;
     [SerializeField] private float maxKnockback = 40f;
-    
 
     [Header("Paricles")]
     [SerializeField] private ParticleSystem speedParticles;
     [SerializeField] private float particlesStartRps = 20f;
     [SerializeField] private GameObject aura;
+    [Header("Auto Unstuck")]
+    [SerializeField] private float stuckTimeBeforeUnstick = 2f;
+    [SerializeField] private float unstuckDistance = 1.5f;
+    [SerializeField] private float unstuckForce = 12f;
+    [SerializeField] private LayerMask unstuckCollisionLayers;
+    private Collider2D stuckCollider;
+    private float stuckTimer;
 
     private void Awake()
     {
@@ -37,7 +97,19 @@ public class PlayerMovement : MonoBehaviour
         rigidBody.gravityScale = 0f;
         rigidBody.freezeRotation = false;
 
-        speedParticles = GetComponentInChildren<ParticleSystem>(true);
+        repulsorBlast.SetActive(false);
+
+        if (musicSource != null)
+            normalMusicPitch = musicSource.pitch;
+
+        foreach(ParticleSystem ps in GetComponentsInChildren<ParticleSystem>(true))
+{
+            if (ps.name == "SpeedParticles")
+            {
+                speedParticles = ps;
+                break;
+            }
+        }
 
         if (speedParticles == null)
             Debug.LogError("No speed particle system found on " + gameObject.name);
@@ -55,6 +127,31 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    private IEnumerator PlayRepulsorBlast()
+    {
+        repulsorBlast.SetActive(true);
+
+        Vector3 startScale = Vector3.zero;
+        Vector3 endScale = Vector3.one * repulsorRadius * 2f * repulsorBlastScaleMultiplier;
+        
+        repulsorBlast.transform.localScale = startScale;
+
+        float elapsed = 0f;
+
+        while (elapsed < blastGrowTime)
+        {
+            elapsed += Time.deltaTime;
+
+            float t = elapsed / blastGrowTime;
+            repulsorBlast.transform.localScale = Vector3.Lerp(startScale, endScale, t);
+            repulsorBlast.transform.position = transform.position;
+            yield return null;
+        }
+
+        repulsorBlast.transform.localScale = endScale;
+        repulsorBlast.SetActive(false);
+    }
+
     void Update()
     {
         if (!GameController.hasStarted)//Stop the player when the game is not started
@@ -64,9 +161,9 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
-        if (Keyboard.current.spaceKey.isPressed || Input.GetMouseButton(1))//Spin the player when the space key or right mouse button is pressed
+        if (Keyboard.current.spaceKey.isPressed)//Spin the player when the space key  pressed
         {
-            float acceleration = spinAcceleration;
+            float acceleration = spinAcceleration * PlayerTimeCompensation;
 
             if (rigidBody.angularVelocity < 0f)
                 acceleration *= 2f;
@@ -79,7 +176,7 @@ public class PlayerMovement : MonoBehaviour
 
             if (Mathf.Abs(currentSpin) > 0f)
             {
-                currentSpin -= Mathf.Sign(currentSpin) * 10f * Time.deltaTime;
+                currentSpin -= Mathf.Sign(currentSpin) * 10f * PlayerTimeCompensation * Time.deltaTime;
 
                 if (Mathf.Sign(currentSpin) != Mathf.Sign(rigidBody.angularVelocity))
                     currentSpin = 0f;
@@ -87,6 +184,35 @@ public class PlayerMovement : MonoBehaviour
                 rigidBody.angularVelocity = currentSpin;
             }
         }
+
+        if(teleporterActive && Time.time >= nextTeleportTime)
+        {
+            teleportIcon.SetActive(true);
+
+            teleportIconAngle += teleportIconRotationSpeed * Time.deltaTime;
+
+            float radians = teleportIconAngle * Mathf.Deg2Rad;
+
+            teleportIcon.transform.position =
+                transform.position +
+                new Vector3(
+                    Mathf.Cos(radians),
+                    Mathf.Sin(radians),
+                    0f
+                ) * teleportIconRadius;
+            teleportIcon.transform.Rotate(0f, 0f, 180f * Time.deltaTime);
+            if (Input.GetMouseButtonDown(1))
+            {
+                TeleportToCursor();
+                nextTeleportTime = Time.time + teleportCooldown;
+            }
+        }
+        else
+        {
+            teleportIcon.SetActive(false);
+        }
+        HandleRepulseAbility();
+        HandleSlowTimeAbility();
 
         inputDirection = Vector2.zero;
 
@@ -107,6 +233,206 @@ public class PlayerMovement : MonoBehaviour
         UpdateSpeedParticles();
 
     }
+
+    private void HandleSlowTimeAbility()
+    {
+        if (!chronoshiftActive || chronoshifting)
+        {
+            slowTimeIcon.SetActive(false);
+            return;
+        }
+
+        bool cooldownReady = Time.unscaledTime >= nextSlowTimeUseTime;
+
+        if (chronoshifting && Time.unscaledTime >= slowTimeEndTime)
+        {
+            EndSlowTime();
+        }
+
+        bool shouldShowIcon = chronoshifting || cooldownReady;
+
+        slowTimeIcon.SetActive(shouldShowIcon);
+
+        if (shouldShowIcon)
+        {
+            OrbitSlowTimeIcon();
+
+            if (slowTimeMinuteHand != null)
+            {
+                slowTimeMinuteHand.Rotate(
+                    0f,
+                    0f,
+                    -slowTimeMinuteHandSpeed * Time.unscaledDeltaTime
+                );
+            }
+        }
+
+        if (!chronoshifting &&
+            cooldownReady &&
+            Input.GetMouseButtonDown(1))
+        {
+            StartSlowTime();
+        }
+    }
+
+    private void StartSlowTime()
+    {
+        chronoshifting = true;
+        slowTimeIcon.SetActive(false);
+        if (musicSource != null)
+            musicSource.pitch = chronoshiftMusicPitch;
+        Time.timeScale = slowTimeScale;
+        Time.fixedDeltaTime = 0.02f * Time.timeScale;
+
+        PlayerTimeCompensation = 1f / slowTimeScale;
+
+        slowTimeEndTime = Time.unscaledTime + slowTimeDuration;
+        nextSlowTimeUseTime = Time.unscaledTime + slowTimeCooldown;
+    }
+
+    private void EndSlowTime()
+    {
+        chronoshifting = false;
+        if (musicSource != null)
+            musicSource.pitch = normalMusicPitch;
+        Time.timeScale = 1f;
+        Time.fixedDeltaTime = 0.02f;
+
+        PlayerTimeCompensation = 1f;
+    }
+
+    private void OrbitSlowTimeIcon()
+    {
+        slowTimeIconAngle += slowTimeIconOrbitSpeed * Time.unscaledDeltaTime;
+
+        float radians = slowTimeIconAngle * Mathf.Deg2Rad;
+
+        slowTimeIcon.transform.position =
+            transform.position +
+            new Vector3(
+                Mathf.Cos(radians),
+                Mathf.Sin(radians),
+                0f
+            ) * slowTimeIconRadius;
+
+        slowTimeIcon.transform.rotation = Quaternion.identity;
+    }
+
+    private void HandleRepulseAbility()
+    {
+        bool repulseReady = Time.time >= nextRepulseTime;
+
+        if (repulsorIcon != null)
+        {
+            if (repulsorActive)
+            {
+                repulsorIcon.SetActive(repulseReady);
+
+                if (repulseReady)
+                {
+                    repulsorIconAngle += repulsorIconRotationSpeed * Time.deltaTime;
+
+                    float radians = repulsorIconAngle * Mathf.Deg2Rad;
+
+                    repulsorIcon.transform.position =
+                        transform.position +
+                        new Vector3(
+                            Mathf.Cos(radians),
+                            Mathf.Sin(radians),
+                            0f
+                        ) * repulsorIconRadius;
+                    repulsorIcon.transform.Rotate(0f, 0f, 180f * Time.deltaTime);
+
+                    if (Input.GetMouseButtonDown(1))
+                    {
+                        RepulseEnemies();
+                        if (blastRoutine != null)
+                            StopCoroutine(blastRoutine);
+
+                        blastRoutine = StartCoroutine(PlayRepulsorBlast());
+                        nextRepulseTime = Time.time + repulsorCooldown;
+                    }
+                }
+            }
+            else
+            {
+                repulsorIcon.SetActive(false);
+            }
+        } 
+    }
+
+    private void RepulseEnemies()
+    {
+        Collider2D[] hits = Physics2D.OverlapCircleAll(
+            transform.position,
+            repulsorRadius,
+            enemyLayer
+        );
+
+        foreach (Collider2D hit in hits)
+        {
+            Rigidbody2D enemyRb = hit.attachedRigidbody;
+
+            if (enemyRb == null)
+                continue;
+            Vector2 direction = enemyRb.position - (Vector2)transform.position;
+
+            SimpleAiMovement ai = enemyRb.GetComponent<SimpleAiMovement>();
+
+            if (ai != null)
+            {
+                ai.ApplyRepulse(direction, repulsorForce, repulsorStunDuration);
+            }
+          
+         }
+    }
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, repulsorRadius);
+    }
+    [SerializeField] private int teleportParticleBurstCount = 100;
+    [SerializeField] private int teleportParticleSortingOrder = 1000;
+    //[SerializeField] private float teleportParticleDestroyDelay = 2f;
+
+    private void TeleportToCursor()
+    {
+        Vector3 start = transform.position;
+
+        Vector3 mouse = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        mouse.z = transform.position.z;
+
+        SpawnTeleportBurst(teleportStartParticles, start);
+
+        transform.position = mouse;
+        rigidBody.linearVelocity = Vector2.zero;
+
+        SpawnTeleportBurst(teleportEndParticles, mouse);
+
+        nextTeleportTime = Time.time + teleportCooldown;
+    }
+
+    private void SpawnTeleportBurst(ParticleSystem prefab, Vector3 position)
+    {
+        if (prefab == null)
+            return;
+
+        GameObject go = Instantiate(prefab.gameObject, position, Quaternion.identity);
+        go.SetActive(true);
+
+        ParticleSystem ps = go.GetComponent<ParticleSystem>();
+        ParticleSystemRenderer renderer = go.GetComponent<ParticleSystemRenderer>();
+
+        if (renderer != null)
+            renderer.sortingOrder = teleportParticleSortingOrder;
+
+        ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+        ps.Clear(true);
+        ps.Emit(teleportParticleBurstCount);
+
+        Destroy(go, teleportParticleDestroyDelay);
+    }
+
     private void UpdateSpeedParticles()
     {
         if (speedParticles == null)
@@ -151,7 +477,7 @@ public class PlayerMovement : MonoBehaviour
          (cameraRight * inputDirection.x) +
          (cameraUp * inputDirection.y * verticalForceMultiplier);
 
-        rigidBody.AddForce(movementDirection.normalized * thrustForce, ForceMode2D.Force);
+        rigidBody.AddForce(movementDirection.normalized * thrustForce * PlayerTimeCompensation, ForceMode2D.Force);
     }
 
     private void ApplyFriction()
@@ -172,6 +498,66 @@ public class PlayerMovement : MonoBehaviour
         {
             rigidBody.linearVelocity = rigidBody.linearVelocity.normalized * maxSpeed;
         }
+    }
+
+    public enum DefenseAbility
+    {
+        Teleport,
+        Repulse,
+        SlowTime
+    }
+    public void SetDefenseAbility(DefenseAbility ability)
+    {
+        ResetAbilities();
+
+        switch (ability)
+        {
+            case DefenseAbility.Teleport:
+                teleporterActive = true;
+                Debug.Log("Teleporter active!");
+                break;
+
+            case DefenseAbility.Repulse:
+                repulsorActive = true;
+                Debug.Log("Repulsor Active!");
+                break;
+
+            case DefenseAbility.SlowTime:
+                Debug.Log("Chrono active!");
+                chronoshiftActive = true;
+                break;
+        }
+    }
+    public void ResetAbilities()
+    {
+        // Slow Time
+        teleporterActive = false;
+        repulsorActive = false;
+        chronoshiftActive = false;
+        chronoshifting = false;
+        nextSlowTimeUseTime = 0f;
+        slowTimeEndTime = 0f;
+        if (musicSource != null)
+            musicSource.pitch = normalMusicPitch;
+        Time.timeScale = 1f;
+        Time.fixedDeltaTime = 0.02f;
+        PlayerTimeCompensation = 1f;
+
+        if (slowTimeIcon != null)
+            slowTimeIcon.SetActive(false);
+
+        // Teleport
+        nextTeleportTime = 0f;
+        if (teleportIcon != null)
+            teleportIcon.SetActive(false);
+
+        // Repulsor
+        nextRepulseTime = 0f;
+        if (repulsorIcon != null)
+            repulsorIcon.SetActive(false);
+
+        if (repulsorBlast != null)
+            repulsorBlast.SetActive(false);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -215,5 +601,60 @@ public class PlayerMovement : MonoBehaviour
         //Debug.Log(
         //    $"AI Speed: {aiSpeed:F1}, RPS: {playerRps:F1}, Knockback: {knockbackForce:F1}"
         //);
+    }
+
+    private void OnCollisionStay2D(Collision2D collision)
+    {
+        if (((1 << collision.gameObject.layer) & unstuckCollisionLayers) == 0)
+            return;
+
+        if (stuckCollider == collision.collider)
+        {
+            stuckTimer += Time.deltaTime;
+        }
+        else
+        {
+            stuckCollider = collision.collider;
+            stuckTimer = 0f;
+        }
+
+        if (stuckTimer >= stuckTimeBeforeUnstick)
+        {
+            AutoUnstuck(collision);
+            stuckTimer = 0f;
+            stuckCollider = null;
+        }
+    }
+
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.collider == stuckCollider)
+        {
+            stuckCollider = null;
+            stuckTimer = 0f;
+        }
+    }
+
+    private void AutoUnstuck(Collision2D collision)
+    {
+        Vector2 pushDirection = Vector2.zero;
+
+        foreach (ContactPoint2D contact in collision.contacts)
+        {
+            pushDirection += contact.normal;
+        }
+
+        if (pushDirection.sqrMagnitude < 0.001f)
+        {
+            pushDirection = ((Vector2)transform.position - collision.rigidbody.position).normalized;
+        }
+        else
+        {
+            pushDirection.Normalize();
+        }
+
+        rigidBody.position += pushDirection * unstuckDistance;
+        rigidBody.linearVelocity = Vector2.zero;
+        rigidBody.AddForce(pushDirection * unstuckForce, ForceMode2D.Impulse);
     }
 }

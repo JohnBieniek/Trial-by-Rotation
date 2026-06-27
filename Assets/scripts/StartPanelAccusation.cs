@@ -74,12 +74,12 @@ public class StartPanelAccusation : MonoBehaviour, IPointerDownHandler
     }
     public void ShowNextAccusation()
     {
-        Debug.Log("Remaining accusation count before pick: " + remainingAccusations.Count);
         PickRandomAccusation();
         accusationAudioPlayed = false;
 
         if (audioUnlocked)
         {
+            GameController.Instance.PlayMenuMusic();
             PlayAccusationAudioOnce();
         }
     }
@@ -173,7 +173,7 @@ public class StartPanelAccusation : MonoBehaviour, IPointerDownHandler
         Debug.Log("Starting testimony loop with " + remainingTestimonies.Count + " testimonies.");
 
         PlayAccusationAudioOnce();
-        yield return new WaitForSeconds(15.0f);
+        yield return new WaitForSeconds(14.0f);
 
         while (remainingTestimonies.Count > 0)
         {
@@ -201,7 +201,7 @@ public class StartPanelAccusation : MonoBehaviour, IPointerDownHandler
             if (remainingTestimonies.Count == 0)
                 break;
 
-            yield return new WaitForSeconds(Random.Range(10f, 12f));
+            yield return new WaitForSeconds(13);
         }
 
         testimonyCoroutine = null;

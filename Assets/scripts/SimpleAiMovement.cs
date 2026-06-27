@@ -32,6 +32,7 @@ public class SimpleAiMovement : MonoBehaviour
 
     [Header("Stun")]
     [SerializeField] private float stunDuration = 1.0f;
+    private float knockbackUntilTime = 0f;
 
     private bool isStunned = false;
     private float stunEndsAt = 0f;
@@ -59,6 +60,16 @@ public class SimpleAiMovement : MonoBehaviour
         }
     }
 
+    public void ApplyRepulse(Vector2 direction, float force, float stunDuration)
+    {
+        knockbackUntilTime = Time.time + stunDuration;
+
+        rb.linearVelocity = Vector2.zero;
+        rb.AddForce(direction.normalized * force, ForceMode2D.Impulse);
+
+        Debug.Log("Repulsed" + this.name + "with " + force + " force");
+
+    }
     private void CheckIfOffWheel()
     {
         wheelOfJustice = GameObject.Find("Wheel of Justice")?.transform;
@@ -121,6 +132,9 @@ public class SimpleAiMovement : MonoBehaviour
                 return;
             }
         }
+
+        if (Time.time < knockbackUntilTime)
+            return;
 
         if (Time.time < nextActionTime)//Small pauses between movements to make it more fair for the player
             return;

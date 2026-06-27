@@ -40,21 +40,19 @@ public class BulletProjectile : MonoBehaviour
             bulletAudio.Play();
         }
     }
+
     public void Launch(Vector2 direction)
     {
         travelDirection = direction.normalized;
         rb.linearVelocity = direction.normalized * speed;
-        //Debug.Log("Buzzsaw speed: " + rb.linearVelocity.magnitude);
+        //Debug.Log("Bulletspeed: " + rb.linearVelocity.magnitude);
         Collider2D playerCollider = GameObject
             .FindGameObjectWithTag("Player")
             .GetComponent<Collider2D>();
 
-            Physics2D.IgnoreCollision(bulletCollider, playerCollider);
+        Physics2D.IgnoreCollision(bulletCollider, playerCollider);
     
-
-
-       
-        Destroy(gameObject, 5f);
+        Destroy(gameObject, 5f);//Don't let the object persist if it misses
     }
 
     private void Update()
@@ -79,8 +77,9 @@ public class BulletProjectile : MonoBehaviour
 
             if (enemyRb != null)
             {
-                Vector2 pushDirection = (collision.transform.position - transform.position).normalized;
-                enemyRb.AddForce(pushDirection * knockbackAmount, ForceMode2D.Impulse);
+                Vector2 pushDirection = travelDirection;
+
+                enemyRb.AddForce(pushDirection * knockbackAmount, ForceMode2D.Impulse);//Push in the direction the bullet goes regardless of impact angle
             }
         }
         if (deathExplosionPrefab != null)

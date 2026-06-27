@@ -49,12 +49,8 @@ public class BuzzsawProjectile : MonoBehaviour
         Collider2D playerCollider = GameObject
             .FindGameObjectWithTag("Player")
             .GetComponent<Collider2D>();
-    if (playerCollider != null && sawCollider!=null) 
-            Physics2D.IgnoreCollision(sawCollider, playerCollider);
-    
+        if (playerCollider != null && sawCollider!=null) Physics2D.IgnoreCollision(sawCollider, playerCollider);
 
-
-       
         Destroy(gameObject, 10f);
     }
 
@@ -82,8 +78,9 @@ public class BuzzsawProjectile : MonoBehaviour
 
             if (enemyRb != null)
             {
-                Vector2 pushDirection = (collision.transform.position - transform.position).normalized;
-                enemyRb.AddForce(pushDirection * knockbackAmount, ForceMode2D.Impulse);
+                Vector2 pushDirection = travelDirection;
+
+                enemyRb.AddForce(pushDirection * knockbackAmount, ForceMode2D.Impulse);//Push in the direction the bullet goes regardless of impact angle
             }
         }
         if (deathExplosionPrefab != null)

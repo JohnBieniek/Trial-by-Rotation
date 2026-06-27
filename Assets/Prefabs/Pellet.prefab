@@ -78,9 +78,9 @@ MonoBehaviour:
   explosionSound: {fileID: 0}
   detonationParticles: {fileID: 0}
   enemyTag: AI
-  stunDuration: 1.53
+  stunDuration: 1.01
   bulletCollider: {fileID: 8083486539790050522}
-  knockbackAmount: 50
+  knockbackAmount: 35.3
   bulletAudio: {fileID: 0}
   speed: 64.8
   deathExplosionPrefab: {fileID: 0}

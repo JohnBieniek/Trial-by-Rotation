@@ -78,11 +78,11 @@ MonoBehaviour:
   explosionSound: {fileID: 8300000, guid: 228f31d34c3d49e49adb274b6761f32e, type: 3}
   detonationParticles: {fileID: 1055664678992861128, guid: a4893fe9cf55a7042abf44342f1c64bb, type: 3}
   enemyTag: AI
-  stunDuration: 1.02
+  stunDuration: 1.25
   bulletCollider: {fileID: 8083486539790050522}
-  knockbackAmount: 40.4
+  knockbackAmount: 57.7
   bulletAudio: {fileID: 0}
-  speed: 40
+  speed: 42.6
   deathExplosionPrefab: {fileID: 947545084519945503, guid: a4893fe9cf55a7042abf44342f1c64bb, type: 3}
 --- !u!58 &8083486539790050522
 CircleCollider2D:

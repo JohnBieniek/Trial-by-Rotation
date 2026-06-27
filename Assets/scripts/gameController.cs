@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using TMPro;
 using Unity.VisualScripting;
+using Unity.VisualScripting.Antlr3.Runtime.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -23,6 +25,16 @@ public class GameController : MonoBehaviour
     [SerializeField] private GameObject initialStartButton;
     [SerializeField] private GameObject startButton;
     [SerializeField] private GameObject skipButton;
+    [SerializeField] private GameObject firingInstructions;//Set firing instructions visible in game for 5 seconds if they have played for 10 seconds without firing
+    private Boolean playerClickedOnce = false;
+    private float timeSinceMouseClick = 0f;
+    private float firingInstructionsVisibleTimer = 0f;
+    private bool firingInstructionsShown = false;
+    private bool firingInstructionsVisible = false;
+    [SerializeField] private GameObject initialInstructions;
+    private float firstGameTimer = 0f;//Determine when initialInstructions fade from screen
+    private bool firstTrialStarted = false;
+    private bool initialInstructionsHidden = false;
 
     [Header("Camera")]
     [SerializeField] private Camera mainCamera;
@@ -48,6 +60,9 @@ public class GameController : MonoBehaviour
     [SerializeField] private AudioSource musicAudioSource;
     [SerializeField] private float musicVolume = .18f;
     [SerializeField] private AudioClip musicClip;
+    [SerializeField] private AudioSource menuMusicAudioSource;
+    [SerializeField] private float menuMusicVolume = .18f;
+    [SerializeField] private AudioClip menuMusicClip;
     [SerializeField] private AudioClip gameOverMusicClip;
     [SerializeField] private float gameOverMusicVolume = .18f;
     [SerializeField] private AudioSource gameOverMusicAudioSource;
@@ -71,8 +86,9 @@ public class GameController : MonoBehaviour
 
     void Awake()
     {
-
         Instance = this;
+        if (firingInstructions != null) firingInstructions.SetActive(false);
+        PlayMenuMusic();
     }
     public void LoadRandomLayout()
     {
@@ -81,7 +97,7 @@ public class GameController : MonoBehaviour
         foreach (GameObject layout in layouts)
             layout.SetActive(false);
 
-        int index = Random.Range(0, layouts.Length);
+        int index = UnityEngine.Random.Range(0, layouts.Length);
         GameObject selectedLayout = layouts[index];
 
         selectedLayout.SetActive(true);
@@ -149,6 +165,49 @@ public class GameController : MonoBehaviour
 
     private void Update()
     {
+        //Movement instructions shown on your first playthrough
+        if (firstTrialStarted && !initialInstructionsHidden)
+        {
+            firstGameTimer += Time.deltaTime;
+
+            if (firstGameTimer >= 5f)
+            {
+                initialInstructions.SetActive(false);
+                initialInstructionsHidden = true;
+            }
+        }
+        //Firing instructions shown if you don't fire your weapon for 10 seconds
+        if (firstTrialStarted && !firingInstructionsShown)
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                playerClickedOnce = true;
+                timeSinceMouseClick = 0f;
+            }
+            else
+            {
+                timeSinceMouseClick += Time.deltaTime;
+            }
+
+            if (!playerClickedOnce && timeSinceMouseClick >= 10f)
+            {
+                firingInstructions.SetActive(true);
+                firingInstructionsVisible = true;
+                firingInstructionsShown = true;
+                firingInstructionsVisibleTimer = 0f;
+            }
+        }
+        if (firingInstructionsVisible)
+        {
+            firingInstructionsVisibleTimer += Time.deltaTime;
+
+            if (firingInstructionsVisibleTimer >= 5f)
+            {
+                firingInstructions.SetActive(false);
+                firingInstructionsVisible = false;
+            }
+        }
+
         if (Input.GetKeyDown(KeyCode.Space))
         {
             if (startPanel != null && startPanel.activeInHierarchy)
@@ -187,6 +246,8 @@ public class GameController : MonoBehaviour
         if (distance > maxDistanceFromWheelCenter + wheelEdgeBuffer)
         {
             //Debug.Log("distance at game over: " + distance);
+            if (!hasStarted || hasWon || isGameOver)
+                return;
             GameOver();
         }
     }
@@ -235,6 +296,9 @@ public class GameController : MonoBehaviour
 
             Destroy(particle.gameObject);
         }
+        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+        player.GetComponent<PlayerMovement>().ResetAbilities();
+
         Time.timeScale = 0f;
         StatusPanelController.Instance.gameObject.SetActive(false);
         DestroyProjectiles();
@@ -292,6 +356,8 @@ public class GameController : MonoBehaviour
                 spinner.ResetSpinner();
         }
     }
+
+    //Clear old bullets before the start of a new round
     private void DestroyProjectiles()
     {
         foreach (GameObject projectile in GameObject.FindGameObjectsWithTag("Projectile"))
@@ -299,21 +365,29 @@ public class GameController : MonoBehaviour
             Destroy(projectile);
         }
     }
+
+    //Allow the user to skip the spinner panel after round 1
     public void SkipToTrial()
     {
+        WeaponSpinner.Instance.EnableRandomDefense();
         WeaponSpinner.Instance.EnableRandomWeapon();
         WeaponSpinner.Instance.EnableRandomModel();
 
         StartFirstTrial();
     }
+
     //Called by the start button on the start panel to start every trial, including the first one
     public void StartFirstTrial()
     {
         //Debug.Log("StartFirstTrial clicked");
+        if (!firstTrialStarted) firstTrialStarted = true;
         hasStarted = true;
         isGameOver = false;
         hasWon = false;
         plaintiffsRefutedThisTrial = 0;
+
+        menuMusicAudioSource.Pause();
+
         Time.timeScale = 1f;
 
         if (gameOverPanel != null)
@@ -346,15 +420,13 @@ public class GameController : MonoBehaviour
             {
                 wheel.ResetRotation();
 
-                float newWheelSpeed = Random.Range(maxSpeed/2, maxSpeed);
+                float newWheelSpeed = UnityEngine.Random.Range(maxSpeed/2, maxSpeed);
 
                 //Debug.Log("Setting wheel speed to " + newWheelSpeed);
 
                 wheel.SetRotationSpeed(newWheelSpeed);
             }
         }
-
-
 
         StatusPanelController.Instance.gameObject.SetActive(true);
     }
@@ -375,6 +447,8 @@ public class GameController : MonoBehaviour
             spinnerAudioSource.Play();
         }
     }
+
+    //Plays and loops the in game music
     private void PlayMusic()
     {
         if (audioSource == null || musicClip == null)
@@ -391,6 +465,25 @@ public class GameController : MonoBehaviour
         else
         {
             musicAudioSource.Play();
+        }
+    }
+
+    public void PlayMenuMusic()
+    {
+        if (menuMusicAudioSource == null || menuMusicClip == null)
+            return;
+
+        menuMusicAudioSource.clip = menuMusicClip;
+        menuMusicAudioSource.loop = true;
+        //Debug.Log("Playing music clip: " + menuMusicClip.name);
+        menuMusicAudioSource.volume = menuMusicVolume;
+        if (menuMusicAudioSource.time > 0)
+        {
+            menuMusicAudioSource.UnPause();
+        }
+        else
+        {
+            menuMusicAudioSource.Play();
         }
     }
 
@@ -438,7 +531,7 @@ public class GameController : MonoBehaviour
         if (playerObj == null || wheelOfJustice == null)
             return;
 
-        float angle = Random.Range(0f, Mathf.PI * 2f);
+        float angle = UnityEngine.Random.Range(0f, Mathf.PI * 2f);
 
         Vector2 offset = new Vector2(
             Mathf.Cos(angle),
@@ -447,12 +540,6 @@ public class GameController : MonoBehaviour
 
         playerObj.transform.position =
             wheelOfJustice.position + (Vector3)(offset);
-
-
-        //Vector2 direction = (wheelCenter.position).normalized;
-
-        //Vector3 spawnPosition =
-        //    wheelCenter.position + (Vector3)(direction * 2.8f);
 
         Rigidbody2D rb = playerObj.GetComponent<Rigidbody2D>();
 
@@ -463,7 +550,7 @@ public class GameController : MonoBehaviour
         }
     }
 
-    //Called by the win button on the win panel to start a new trial
+    //Called by the win button on the win panel to go to the starting menu
     public void StartNewTrial()
     {
         //Debug.Log("StartNewTrial clicked");
@@ -478,16 +565,11 @@ public class GameController : MonoBehaviour
         }
 
         Time.timeScale = 1f;
+        PlayMenuMusic();
         gameOverMusicAudioSource.Pause();
         victoryMusicAudioSource.Pause();
         audioSource.Stop();
-        //UnityEngine.SceneManagement.Scene currentScene =
-        //    UnityEngine.SceneManagement.SceneManager.GetActiveScene();
-
-        //UnityEngine.SceneManagement.SceneManager.LoadScene(currentScene.name);
         startPanelAccusation.ShowNextAccusation();
-        //startPanelAccusation.StartGame();
- 
     }
 
     public bool IsMenuOpen()
@@ -511,16 +593,17 @@ public class GameController : MonoBehaviour
         startPanelAccusation.GameOver();
         JudgeAudioManager.Instance.SetGameOver(true);
         isGameOver = true;
+        
         spinnerAudioSource.Pause();
         musicAudioSource.Pause();
+        
         if (audioSource != null && guiltyClip != null)
         {
             audioSource.PlayOneShot(guiltyClip);
         }
         PlayGameOverMusic();
-        ParticleSystem[] particles = FindObjectsByType<ParticleSystem>(
-     FindObjectsSortMode.None);
 
+        ParticleSystem[] particles = FindObjectsByType<ParticleSystem>(FindObjectsSortMode.None);
         foreach (ParticleSystem particle in particles)
         {
             if (particle.transform.IsChildOf(player) || particle.transform.tag=="Environment")
@@ -529,12 +612,12 @@ public class GameController : MonoBehaviour
             Destroy(particle.gameObject);
         }
         DestroyProjectiles();
+        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+        player.GetComponent<PlayerMovement>().ResetAbilities();
         int enemiesRemaining = FindObjectsByType<SimpleAiMovement>(
             FindObjectsSortMode.None
         ).Length;
         int refutedThisTrial = (int)Mathf.Max(0, StartPanelAccusation.Instance.GetPlaintiffCount() -enemiesRemaining);
-        //Debug.Log("plantiffs this trial:" + StartPanelAccusation.Instance.GetPlaintiffCount());
-        //Debug.Log("plaintiffs refuted this trial: " + refutedThisTrial);
         highestPlaintiffsRefuted = Mathf.Max(
             highestPlaintiffsRefuted,
             refutedThisTrial
@@ -544,18 +627,23 @@ public class GameController : MonoBehaviour
             StartPanelAccusation.Instance.GetPlaintiffCount()-3
         );
         SetPlaintiffsRefutedThisTrial();
+
         SpawnPlayer();
+
         gameOverPanel.SetActive(true);
         gameOverPanel.transform.SetAsLastSibling();
+
         StatusPanelController.Instance.gameObject.SetActive(false);
         StartPanelAccusation.Instance.SetPlaintiffCount(0f);
-        Time.timeScale = 0f;
 
+        Time.timeScale = 0f;
     }
 
+    //Called by the Accept summons button on the game over screen to go to the manin menu to start a new trial
     public void PlayAgain()
     {
         Time.timeScale = 0f;
+        PlayMenuMusic();
         isGameOver = false;
         hasStarted = false;
         startPanel.SetActive(true);
@@ -565,23 +653,26 @@ public class GameController : MonoBehaviour
         victoryMusicAudioSource.Pause();
         gameOverMusicAudioSource.Pause();
         StartPanelAccusation.Instance.ShowNextAccusation();
-        //Scene currentScene = SceneManager.GetActiveScene();
-        //SceneManager.LoadScene(currentScene.name);
     }
 
+    //Let the camera chase you, unless we are displaying one time instructional text on screen
     private void LateUpdate()
     {
         if (isGameOver || mainCamera == null || player == null)
         {
             return;
         }
-
         Vector3 targetPosition = player.position + cameraOffset;
-
+        float followSpeed = cameraFollowSpeed;
+        if (firstGameTimer <= 5f || firingInstructionsVisible) {
+            followSpeed = 15f; // or 20-30 if you want it faster
+        }
+      
         mainCamera.transform.position = Vector3.Lerp(
             mainCamera.transform.position,
             targetPosition,
-            cameraFollowSpeed * Time.deltaTime
-        );
+            followSpeed * Time.deltaTime
+            );
+        
     }
 }
