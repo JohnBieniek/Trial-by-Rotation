@@ -4240,7 +4240,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!212 &291454985
 SpriteRenderer:
   serializedVersion: 2
@@ -18466,7 +18466,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &773140772
 Transform:
   m_ObjectHideFlags: 0
@@ -26916,7 +26916,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!212 &988233184
 SpriteRenderer:
   serializedVersion: 2
@@ -37102,7 +37102,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1540158484
 Transform:
   m_ObjectHideFlags: 0
@@ -37113,7 +37113,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 11, y: 11, z: 1}
+  m_LocalScale: {x: 6, y: 6, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 693296260}
@@ -39875,7 +39875,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!212 &1702392717
 SpriteRenderer:
   serializedVersion: 2
@@ -40822,7 +40822,7 @@ GameObject:
   - component: {fileID: 1762732068}
   - component: {fileID: 1762732067}
   m_Layer: 4
-  m_Name: Square
+  m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -49722,7 +49722,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6216306845626585326, guid: 3a86c4dee0b13334c8d2d6332ecf8d52, type: 3}
       propertyPath: m_CullingMask.m_Bits
-      value: 999
+      value: 2023
       objectReference: {fileID: 0}
     - target: {fileID: 6216306845626585326, guid: 3a86c4dee0b13334c8d2d6332ecf8d52, type: 3}
       propertyPath: m_NormalizedViewPortRect.width
