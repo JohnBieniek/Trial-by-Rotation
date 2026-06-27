@@ -123,9 +123,9 @@ public class StartPanelAccusation : MonoBehaviour, IPointerDownHandler
         accusationAudioPlayed = true;
 
         audioSource.Stop();
-        audioSource.PlayOneShot(currentAccusation.audioClip);
+        audioSource.PlayOneShot(currentAccusation.audioClip, 0.8f);
 
-        Debug.Log("Playing accusation: " + currentAccusation.audioClip.name);
+        //Debug.Log("Playing accusation: " + currentAccusation.audioClip.name);
     }
 
     public void StartGame()
@@ -170,7 +170,7 @@ public class StartPanelAccusation : MonoBehaviour, IPointerDownHandler
 
     private IEnumerator TestimonyLoop()
     {
-        Debug.Log("Starting testimony loop with " + remainingTestimonies.Count + " testimonies.");
+        //Debug.Log("Starting testimony loop with " + remainingTestimonies.Count + " testimonies.");
 
         PlayAccusationAudioOnce();
         yield return new WaitForSeconds(14.0f);
@@ -182,7 +182,7 @@ public class StartPanelAccusation : MonoBehaviour, IPointerDownHandler
 
             AudioClip clip = testimony.audioClip;
 
-            Debug.Log("Selected testimony: " + (clip != null ? clip.name : "null") + " from bag index: " + bagIndex);
+            //Debug.Log("Selected testimony: " + (clip != null ? clip.name : "null") + " from bag index: " + bagIndex);
 
             remainingTestimonies.RemoveAt(bagIndex);
 
@@ -195,7 +195,7 @@ public class StartPanelAccusation : MonoBehaviour, IPointerDownHandler
                     testimonyVolume * testimony.volume
                 );
 
-                Debug.Log("Playing testimony: " + clip.name + " at volume " + testimony.volume);
+                //Debug.Log("Playing testimony: " + clip.name + " at volume " + testimony.volume);
             }
 
             if (remainingTestimonies.Count == 0)

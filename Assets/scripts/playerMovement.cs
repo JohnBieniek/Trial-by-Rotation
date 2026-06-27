@@ -55,7 +55,6 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float slowTimeCooldown = 10f;
     [SerializeField] private float slowTimeDuration = 3f;
     [SerializeField] private float slowTimeScale = 0.5f;
-    [SerializeField] private KeyCode slowTimeKey = KeyCode.Q;
 
     [SerializeField] private float slowTimeIconRadius = 1.75f;
     [SerializeField] private float slowTimeIconOrbitSpeed = 45f;
@@ -133,10 +132,8 @@ public class PlayerMovement : MonoBehaviour
 
     private void PlayDefenseAudio(AudioClip clip)
     {
-        if (defenseAudioSource == null || clip == null)
-            return;
-
-        defenseAudioSource.PlayOneShot(clip, defenseAudioVolume);
+        Debug.Log("Playing " + clip.name);
+       defenseAudioSource.PlayOneShot(clip, defenseAudioVolume);
     }
 
     private IEnumerator PlayRepulsorBlast()
@@ -296,8 +293,9 @@ public class PlayerMovement : MonoBehaviour
 
     private void StartSlowTime()
     {
+        GameController.Instance.NotifyDefensiveAbilityUsed();
         chronoshifting = true;
-
+        PlayDefenseAudio(chronoStartAudioClip);
         slowTimeIcon.SetActive(false);
         if (musicSource != null)
             musicSource.pitch = chronoshiftMusicPitch;
@@ -366,6 +364,7 @@ public class PlayerMovement : MonoBehaviour
 
                     if (Input.GetMouseButtonDown(1))
                     {
+                        GameController.Instance.NotifyDefensiveAbilityUsed();
                         RepulseEnemies();
                         if (blastRoutine != null)
                             StopCoroutine(blastRoutine);
@@ -418,6 +417,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void TeleportToCursor()
     {
+        GameController.Instance.NotifyDefensiveAbilityUsed();
         Vector3 start = transform.position;
         PlayDefenseAudio(teleportAudioClip);
         Vector3 mouse = Camera.main.ScreenToWorldPoint(Input.mousePosition);

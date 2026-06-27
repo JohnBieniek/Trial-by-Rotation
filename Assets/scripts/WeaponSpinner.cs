@@ -137,19 +137,19 @@ public class WeaponSpinner : MonoBehaviour
             case 0:
             case 3:
                 playerMovement.SetDefenseAbility(DefenseAbility.SlowTime);
-                Debug.Log("Selected Chrono");
+                //Debug.Log("Selected Chrono");
                 break;
 
             case 1:
             case 4:
                 playerMovement.SetDefenseAbility(DefenseAbility.Repulse);
-                Debug.Log("Selected Repulsor");
+                //Debug.Log("Selected Repulsor");
                 break;
 
             case 2:
             case 5:
                 playerMovement.SetDefenseAbility(DefenseAbility.Teleport);
-                Debug.Log("Selected Teleport");
+                //Debug.Log("Selected Teleport");
                 break;
         }
     }
@@ -165,7 +165,7 @@ public class WeaponSpinner : MonoBehaviour
 
         int slot = Mathf.FloorToInt(correctedAngle / slotSize);
 
-        Debug.Log("DefenseWheel z: " + z + " corrected: " + correctedAngle + " slot: " + slot);
+        //Debug.Log("DefenseWheel z: " + z + " corrected: " + correctedAngle + " slot: " + slot);
 
         return slot;
     }
@@ -237,17 +237,17 @@ public class WeaponSpinner : MonoBehaviour
         {
             case 0:
                 playerMovement.SetDefenseAbility(DefenseAbility.SlowTime);
-                Debug.Log("Selected Chrono");
+                //Debug.Log("Selected Chrono");
                 break;
 
             case 1:
                 playerMovement.SetDefenseAbility(DefenseAbility.Repulse);
-                Debug.Log("Selected Repulsor");
+                //Debug.Log("Selected Repulsor");
                 break;
 
             case 2:
                 playerMovement.SetDefenseAbility(DefenseAbility.Teleport);
-                Debug.Log("Selected Teleport");
+                //Debug.Log("Selected Teleport");
                 break;
         }
     
@@ -298,18 +298,18 @@ public class WeaponSpinner : MonoBehaviour
             case 0:
             case 3:
                 machineGunScript.enabled = true; // Gatling
-                Debug.Log("Selected Gatling Gun");
+                //Debug.Log("Selected Gatling Gun");
                 break;
 
             case 2:
             case 5:
                 buzzsawLauncherScript.enabled = true; // Whirler
-                Debug.Log("Selected Buzzsaw Launcher");
+                //Debug.Log("Selected Buzzsaw Launcher");
                 break;
 
             case 1:
             case 4:
-                Debug.Log("Selected Shotgun");
+                //Debug.Log("Selected Shotgun");
                 shotgunScript.enabled = true; // Blaster
                 break;
         }
@@ -326,7 +326,7 @@ public class WeaponSpinner : MonoBehaviour
 
         int slot = Mathf.FloorToInt(correctedAngle / slotSize);
 
-        Debug.Log("Wheel z: " + z + " corrected: " + correctedAngle + " slot: " + slot);
+        //Debug.Log("Wheel z: " + z + " corrected: " + correctedAngle + " slot: " + slot);
 
         return slot;
     }
@@ -343,7 +343,7 @@ public class WeaponSpinner : MonoBehaviour
 
         int slot = Mathf.FloorToInt(correctedAngle / slotSize);
 
-        Debug.Log("PlayerWheel z: " + z + " corrected: " + correctedAngle + " slot: " + slot);
+        //Debug.Log("PlayerWheel z: " + z + " corrected: " + correctedAngle + " slot: " + slot);
 
         return slot;
     }

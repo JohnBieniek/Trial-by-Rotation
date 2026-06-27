@@ -36,7 +36,7 @@ public class JudgeAudioManager : MonoBehaviour
         {
             AudioClip nextClip = playQueue.Dequeue();
             audioSource.clip = nextClip;
-            audioSource.volume = 0.9f;
+            audioSource.volume = 0.8f;
             audioSource.Play();
         }
     }

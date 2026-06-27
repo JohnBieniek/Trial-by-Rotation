@@ -19,7 +19,7 @@ public class StopSpinnerButton : MonoBehaviour
 
         if (spinner == null)
         {
-            Debug.LogError("No WeaponSpinner found in scene.");
+            //Debug.LogError("No WeaponSpinner found in scene.");
             return;
         }
 

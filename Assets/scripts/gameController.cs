@@ -61,7 +61,7 @@ public class GameController : MonoBehaviour
     [SerializeField] private float musicVolume = .18f;
     [SerializeField] private AudioClip musicClip;
     [SerializeField] private AudioSource menuMusicAudioSource;
-    [SerializeField] private float menuMusicVolume = .18f;
+    [SerializeField] private float menuMusicVolume = .11f;
     [SerializeField] private AudioClip menuMusicClip;
     [SerializeField] private AudioClip gameOverMusicClip;
     [SerializeField] private float gameOverMusicVolume = .18f;
@@ -82,7 +82,19 @@ public class GameController : MonoBehaviour
     private int plaintiffsRefutedThisTrial;
     private readonly Dictionary<Transform, Transform> originalParents = new();
     private PlayerMovement playerMovement;
+    [SerializeField] private float winCheckInterval = 0.75f;
+    private float nextWinCheckTime;
     public static GameController Instance { get; private set; }
+
+    [SerializeField] private GameObject defensiveInstructions;
+
+    private bool playerUsedDefenseOnce = false;
+    private float timeSinceDefenseUse = 0f;
+    private float defensiveInstructionsVisibleTimer = 0f;
+    private bool defensiveInstructionsShown = false;
+    private bool defensiveInstructionsVisible = false;
+    [SerializeField] private float defensiveInstructionDelay = 25f;
+    [SerializeField] private float defensiveInstructionDisplayTime = 5f;
 
     void Awake()
     {
@@ -90,6 +102,8 @@ public class GameController : MonoBehaviour
         if (firingInstructions != null) firingInstructions.SetActive(false);
         playerMovement = FindFirstObjectByType<PlayerMovement>();
         PlayMenuMusic();
+        if (defensiveInstructions != null)
+            defensiveInstructions.SetActive(false);
     }
     public void LoadRandomLayout()
     {
@@ -164,6 +178,17 @@ public class GameController : MonoBehaviour
         return isGameOver || hasWon;
     }
 
+    public void NotifyDefensiveAbilityUsed()
+    {
+        playerUsedDefenseOnce = true;
+        timeSinceDefenseUse = 0f;
+
+        if (defensiveInstructions != null)
+            defensiveInstructions.SetActive(false);
+
+        defensiveInstructionsVisible = false;
+    }
+
     private void Update()
     {
         //Movement instructions shown on your first playthrough
@@ -226,27 +251,57 @@ public class GameController : MonoBehaviour
                 PlayAgain();
             }
         }
+        if (firstTrialStarted && !defensiveInstructionsShown)
+        {
+            if (!playerUsedDefenseOnce)
+            {
+                timeSinceDefenseUse += Time.deltaTime;
+            }
 
+            if (!playerUsedDefenseOnce && timeSinceDefenseUse >= defensiveInstructionDelay)
+            {
+                defensiveInstructions.SetActive(true);
+                defensiveInstructionsVisible = true;
+                defensiveInstructionsShown = true;
+                defensiveInstructionsVisibleTimer = 0f;
+            }
+        }
+
+        if (defensiveInstructionsVisible)
+        {
+            defensiveInstructionsVisibleTimer += Time.deltaTime;
+
+            if (defensiveInstructionsVisibleTimer >= defensiveInstructionDisplayTime)
+            {
+                defensiveInstructions.SetActive(false);
+                defensiveInstructionsVisible = false;
+            }
+        }
 
         if (isGameOver || player == null || wheelOfJustice == null)
         {
             return;
         }
 
-        if (!hasWon) CheckForWin();
-        
-        float spinSpeed = playerMovement.GetComponent<Rigidbody2D>().angularVelocity;
-        spinSpeed = Mathf.Abs(spinSpeed);
-        if (spinSpeed < 1080) spinSpeed = 0;
-        spinnerAudioSource.volume = spinnerVolume* (spinSpeed/200);
-        float distance = Vector2.Distance(player.position, wheelOfJustice.position);
-
-        if (distance > maxDistanceFromWheelCenter + wheelEdgeBuffer)
+        if (hasStarted && !hasWon && !isGameOver && Time.time >= nextWinCheckTime)
         {
-            //Debug.Log("distance at game over: " + distance);
-            if (!hasStarted || hasWon || isGameOver)
-                return;
-            GameOver();
+            nextWinCheckTime = Time.time + winCheckInterval;
+            CheckForWin();
+
+            float distance = Vector2.Distance(player.position, wheelOfJustice.position);
+
+            if (distance > maxDistanceFromWheelCenter + wheelEdgeBuffer)
+            {
+                //Debug.Log("distance at game over: " + distance);
+                if (!hasStarted || hasWon || isGameOver)
+                    return;
+                GameOver();
+            }
+
+            float spinSpeed = playerMovement.GetComponent<Rigidbody2D>().angularVelocity;
+            spinSpeed = Mathf.Abs(spinSpeed);
+            if (spinSpeed < 1080) spinSpeed = 0;
+            spinnerAudioSource.volume = spinnerVolume * (spinSpeed / 200);
         }
     }
 
@@ -256,6 +311,7 @@ public class GameController : MonoBehaviour
             return;
         if (spinnerPanel != null && spinnerPanel.activeInHierarchy)
             return;
+
         if (!hasWon && hasStarted
             && !isGameOver) { 
             enemiesRemaining = FindObjectsByType<SimpleAiMovement>(

@@ -8,7 +8,7 @@ public class WheelOfJustice : MonoBehaviour
     public void SetRotationSpeed(float newSpeed)
     {
         rotationSpeed = newSpeed;
-        Debug.Log("Wheel speed set to: " + rotationSpeed);
+        //Debug.Log("Wheel speed set to: " + rotationSpeed);
     }
 
     public void ResetRotation()

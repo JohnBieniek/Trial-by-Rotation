@@ -67,7 +67,7 @@ public class SimpleAiMovement : MonoBehaviour
         rb.linearVelocity = Vector2.zero;
         rb.AddForce(direction.normalized * force, ForceMode2D.Impulse);
 
-        Debug.Log("Repulsed" + this.name + "with " + force + " force");
+        //Debug.Log("Repulsed" + this.name + "with " + force + " force");
 
     }
     private void CheckIfOffWheel()
