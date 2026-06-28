@@ -37,7 +37,7 @@ public class SimpleAiMovement : MonoBehaviour
     private bool isStunned = false;
     private float stunEndsAt = 0f;
     private float nextActionTime;
-
+    [SerializeField] private GameObject aura;
     private void Awake()
     {
         audioSource = GetComponent<AudioSource>();
@@ -117,6 +117,9 @@ public class SimpleAiMovement : MonoBehaviour
             rb.angularVelocity = 0f;
             return;
         }
+        float rps = Mathf.Abs(rb.angularVelocity) / 360f;
+        if (rps > 5) aura.SetActive(true);
+        else aura.SetActive(false);
 
         CheckIfOffWheel();//See if they are dead before actiong
 
