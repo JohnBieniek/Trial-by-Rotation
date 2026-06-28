@@ -118,7 +118,7 @@ public class SimpleAiMovement : MonoBehaviour
             return;
         }
         float rps = Mathf.Abs(rb.angularVelocity) / 360f;
-        if (rps > 5) aura.SetActive(true);
+        if (rps > 3) aura.SetActive(true);
         else aura.SetActive(false);
 
         CheckIfOffWheel();//See if they are dead before actiong
