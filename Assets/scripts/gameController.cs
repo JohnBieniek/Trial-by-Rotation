@@ -124,7 +124,8 @@ public class GameController : MonoBehaviour
 
     private bool isPaused = false;
     private float timeScaleBeforePause = 1f;
-
+    [SerializeField] private ParticleSystem[] fireParticles;
+    private bool fireActive = false;
     void Awake()
     {
         Instance = this;
@@ -132,12 +133,37 @@ public class GameController : MonoBehaviour
         playerMovement = FindFirstObjectByType<PlayerMovement>();
         PlayMenuMusic();
         SetupSpinInstruction();
+        SetFireActive(false);
         if (defensiveInstructions != null)
             defensiveInstructions.SetActive(false);
         if (pausePanel != null)
             pausePanel.SetActive(false);
     }
 
+    public void SetFireActive(bool active)
+    {
+        if (fireActive == active)
+            return;
+
+        fireActive = active;
+
+        foreach (ParticleSystem ps in fireParticles)
+        {
+            if (ps == null)
+                continue;
+
+            if (active)
+            {
+                ps.gameObject.SetActive(true);
+                ps.Play(true);
+            }
+            else
+            {
+                ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+                ps.gameObject.SetActive(false);
+            }
+        }
+    }
     private void SetupSpinInstruction()
     {
         if (spin == null)
@@ -514,6 +540,7 @@ public class GameController : MonoBehaviour
         startPanelAccusation.GameOver();//Stop testimony loop and audio
         musicAudioSource.Pause();
         spinnerAudioSource.Pause();
+        SetFireActive(false);
         if (audioSource != null && innocentClip != null)
         {
             audioSource.PlayOneShot(innocentClip);
@@ -620,7 +647,7 @@ public class GameController : MonoBehaviour
         plaintiffsRefutedThisTrial = 0;
 
         menuMusicAudioSource.Pause();
-
+        SetFireActive(true);
         Time.timeScale = 1f;
 
         if (gameOverPanel != null)
@@ -826,7 +853,7 @@ public class GameController : MonoBehaviour
         startPanelAccusation.GameOver();
         JudgeAudioManager.Instance.SetGameOver(true);
         isGameOver = true;
-        
+        SetFireActive(false);
         spinnerAudioSource.Pause();
         musicAudioSource.Pause();
         

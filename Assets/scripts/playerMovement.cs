@@ -91,15 +91,18 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float unstuckForce = 12f;
     [SerializeField] private LayerMask unstuckCollisionLayers;
     private Collider2D stuckCollider;
-    private float stuckTimer;
 
+    private float stuckTimer;
+    [SerializeField] private ParticleSystem[] fireParticles;
+
+    private bool isActive;
     private void Awake()
     {
         rigidBody = GetComponent<Rigidbody2D>();
 
         rigidBody.gravityScale = 0f;
         rigidBody.freezeRotation = false;
-
+        SetFireActive(false);
         repulsorBlast.SetActive(false);
 
         if (musicSource != null)
@@ -129,7 +132,30 @@ public class PlayerMovement : MonoBehaviour
             transform.SetParent(wheel.transform, true);
         }
     }
+    public void SetFireActive(bool active)
+    {
+        if (isActive == active)
+            return;
 
+        isActive = active;
+
+        foreach (ParticleSystem ps in fireParticles)
+        {
+            if (ps == null)
+                continue;
+
+            if (active)
+            {
+                ps.gameObject.SetActive(true);
+                ps.Play(true);
+            }
+            else
+            {
+                ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+                ps.gameObject.SetActive(false);
+            }
+        }
+    }
     private void PlayDefenseAudio(AudioClip clip)
     {
         Debug.Log("Playing " + clip.name);
